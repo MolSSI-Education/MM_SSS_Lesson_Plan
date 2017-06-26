@@ -1,23 +1,28 @@
+"""
+This is a file for my forcefields
+"""
+
 import numpy as np
 
 
-class forceField(object):
+class ForceField(object):
     def __init__(self, potentialType, parms, cutoff):
+        """
+        This is a base class for my force fields.
+        """
 
-        try:
-            isinstance(parms, tuple)
-        except ValueError:
-            raise ValueError("Pass a tuple.")
-        else:
-            self.parms = parms
-            self.potentalType = potentialType
-            self.cutoff = cutoff
-            self.cutoff2 = np.power(cutoff, 2)
+        if not isinstance(parms, tuple):
+            raise TypeError("ForceField: second parameters, params, must be passed as a tuple.")
+
+        self.parms = parms
+        self.potentalType = potentialType
+        self.cutoff = cutoff
+        self.cutoff2 = np.power(cutoff, 2)
 
 
-class lennardJones(forceField):
+class lennardJones(ForceField):
     def __init__(self, parms, cutoff):
-        forceField.__init__(self, "lennardJones", parms, cutoff)
+        ForceField.__init__(self, "lennardJones", parms, cutoff)
 
     def evaluate(self, rij2):
         sigByR2 = np.power(self.parms[0], 2) / rij2

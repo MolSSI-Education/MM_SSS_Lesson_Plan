@@ -21,7 +21,7 @@ class simulation(object):
         if self.method == "monteCarlo":
             box = self.boxManager.box
             pairEnergy = self.ffManager.getPairEnergy(box)
-            tailCorrection = self.ffManager.forceField.getTailCorrection(box)
+            tailCorrection = self.ffManager.ForceField.getTailCorrection(box)
             nAccept = 0
             for iStep in range(0, self.steps):
                 iParticle = np.random.randint(box.numParticles)
@@ -53,7 +53,7 @@ class simulation(object):
                 if np.mod(iStep + 1, self.printProp) == 0:
                     totalEnergy = \
                             (pairEnergy + tailCorrection)/ \
-                            (self.ffManager.forceField.parms[1]* \
+                            (self.ffManager.ForceField.parms[1]* \
                             box.numParticles)
                     print(iStep+1, \
                             totalEnergy, \

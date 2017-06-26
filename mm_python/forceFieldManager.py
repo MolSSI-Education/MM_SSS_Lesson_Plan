@@ -1,13 +1,13 @@
 import numpy as np
 
 
-class forceFieldManager(object):
-    def __init__(self, forceField):
-        self.forceField = forceField
+class ForceFieldManager(object):
+    def __init__(self, ForceField):
+        self.ForceField = ForceField
 
     def assignSystemForceField(self, box):
         for iParticle in range(0, box.numParticles):
-            box.particle[iParticle].parms = self.forceField.parms
+            box.particle[iParticle].parms = self.ForceField.parms
 
     def getMolEnergy(self, iParticle, box):
         iPosition = box.particle[iParticle].position
@@ -18,8 +18,8 @@ class forceFieldManager(object):
             rij = iPosition - jPosition
             rij = rij - box.length * np.round(rij / box.length)
             rij2 = np.sum(np.power(rij, 2))
-            if rij2 < self.forceField.cutoff2:
-                eij += self.forceField.evaluate(rij2)
+            if rij2 < self.ForceField.cutoff2:
+                eij += self.ForceField.evaluate(rij2)
         return eij
 
     def getPairEnergy(self, box):

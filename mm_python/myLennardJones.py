@@ -1,7 +1,7 @@
-from .forceField import lennardJones
+from .ForceField import lennardJones
 from .box import box
 from .simulation import simulation
-from .forceFieldManager import forceFieldManager
+from .ForceFieldManager import ForceFieldManager
 from .boxManager import boxManager
 import numpy as np
 
@@ -23,7 +23,7 @@ myBoxManager.addParticles(n=numParticles, method="lattice")
 #myBoxManager.getConfigFromFile(restartFile = "nistConfig.xyz")
 
 myForceField = lennardJones(parms=(sigma, epsilon), cutoff=3 * sigma)
-myForceFieldManager = forceFieldManager(myForceField)
+myForceFieldManager = ForceFieldManager(myForceField)
 myForceFieldManager.assignSystemForceField(myBox)
 
 mySimulation = simulation(

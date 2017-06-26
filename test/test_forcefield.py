@@ -9,7 +9,7 @@ def test_lj_ff1():
     params = (2.5, 6.5)
     cutoff = 10
 
-    lj_ff = mmpy.forceField.lennardJones(params, cutoff) 
+    lj_ff = mmpy.ForceField.lennardJones(params, cutoff) 
 
     rij2 = np.linspace(0.1, 50, 1000)
     
