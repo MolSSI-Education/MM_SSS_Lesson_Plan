@@ -1,8 +1,8 @@
-from forceField import lennardJones
-from box import box
-from simulation import simulation
-from forceFieldManager import forceFieldManager
-from boxManager import boxManager
+from .forceField import lennardJones
+from .box import box
+from .simulation import simulation
+from .forceFieldManager import forceFieldManager
+from .boxManager import boxManager
 import numpy as np
 
 reducedTemperature = 0.85

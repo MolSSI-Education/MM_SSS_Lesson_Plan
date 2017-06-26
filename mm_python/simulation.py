@@ -54,8 +54,8 @@ class simulation(object):
                             (pairEnergy + tailCorrection)/ \
                             (self.ffManager.forceField.parms[1]* \
                             box.numParticles)
-                    print iStep+1, \
+                    print(iStep+1, \
                             totalEnergy, \
-                            float(nAccept)/(float(iStep)+1) * 100
+                            float(nAccept)/(float(iStep)+1) * 100)
                 if np.mod(iStep, self.printXYZ)==0:
                     pass

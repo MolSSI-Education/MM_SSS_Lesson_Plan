@@ -1,5 +1,4 @@
 import numpy as np
-import constants
 
 class forceFieldManager(object):
     def __init__(self,forceField):
@@ -19,7 +18,7 @@ class forceFieldManager(object):
             rij = rij - box.length*np.round(rij/box.length)
             rij2 = np.sum(np.power(rij,2))
             if rij2 < self.forceField.cutoff2:
-                eij += self.forceField.eval(rij2)
+                eij += self.forceField.evaluate(rij2)
         return eij
 
     def getPairEnergy(self,box):

@@ -1,5 +1,5 @@
 import numpy as np
-from particle import particle
+from .particle import particle
 
 class boxManager(object):
     def __init__(self, box):

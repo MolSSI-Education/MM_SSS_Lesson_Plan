@@ -18,7 +18,7 @@ class lennardJones(forceField):
     def __init__(self, parms, cutoff):
         forceField.__init__(self, "lennardJones", parms, cutoff)
 
-    def eval(self, rij2):
+    def evaluate(self, rij2):
         sigByR2 = np.power(self.parms[0],2) / rij2
         sigByR6 = np.power(sigByR2,3)
         sigByR12 = np.power(sigByR6,2)
