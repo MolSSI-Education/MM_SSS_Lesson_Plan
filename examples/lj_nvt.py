@@ -1,8 +1,9 @@
-from .ForceField import lennardJones
-from .simulation import simulation
-from .ForceFieldManager import ForceFieldManager
-from .boxManager import boxManager, box
+#from .ForceField import LennardJones
+#from .Simulation import Simulation
+#from .ForceFieldManager import ForceFieldManager
+#from .BoxManager import BoxManager, Box
 import numpy as np
+import mm_python as mmpy 
 
 reducedTemperature = 0.85
 reducedDensity = 0.003
@@ -16,16 +17,18 @@ realTemperature = epsilon * reducedTemperature
 boxLength = reducedDensity / np.power(sigma, 3)
 boxLength = np.power(numParticles / boxLength, 0.333)
 
-myBox = box(length=boxLength)
-myBoxManager = boxManager(myBox)
+myBox = mmpy.Box(length=boxLength)
+myBoxManager = mmpy.BoxManager(myBox)
 myBoxManager.addParticles(n=numParticles, method="lattice")
 #myBoxManager.getConfigFromFile(restartFile = "nistConfig.xyz")
 
-myForceField = lennardJones(parms=(sigma, epsilon), cutoff=3 * sigma)
-myForceFieldManager = ForceFieldManager(myForceField)
+myForceField = mmpy.ForceField.LennardJones(
+    parms=(sigma, epsilon), cutoff=3 * sigma)
+
+myForceFieldManager = mmpy.ForceFieldManager(myForceField)
 myForceFieldManager.assignSystemForceField(myBox)
 
-mySimulation = simulation(
+mySimulation = mmpy.Simulation(
     method="monteCarlo",
     temperature=realTemperature,
     steps=1000000,
