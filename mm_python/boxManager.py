@@ -1,6 +1,11 @@
 import numpy as np
 from .particle import particle
 
+class box(object):
+    def __init__(self, length):
+        self.length = length
+        self.particle = []
+        self.numParticles = 0
 
 class boxManager(object):
     def __init__(self, box):
