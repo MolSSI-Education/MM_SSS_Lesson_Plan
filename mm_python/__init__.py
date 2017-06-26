@@ -1,6 +1,3 @@
-
-
-
 from . import boxManager
 from . import forceFieldManager
 from . import particle
