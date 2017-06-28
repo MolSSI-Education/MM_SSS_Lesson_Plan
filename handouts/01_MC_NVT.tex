@@ -1,0 +1,301 @@
+%\documentclass[12pt]{article}
+\documentclass[aip,jcp,preprint,superscriptaddress,floatfix]{revtex4-1}
+\usepackage{url,graphicx,tabularx,array,geometry,amsmath,listings}
+\setlength{\parskip}{2ex} %--skip lines between paragraphs
+\setlength{\parindent}{20pt} %--don't indent paragraphs
+
+\setlength{\headheight}{-50pt}
+\setlength{\textheight}{700pt}
+\setlength{\textwidth}{500pt}
+\setlength{\oddsidemargin}{-10pt}
+\setlength{\footskip}{50pt}
+\usepackage{graphicx}% Include figure files
+\usepackage{bm}
+\usepackage{hyperref}
+\graphicspath{{./Figures/}}
+
+%-- Commands for header
+\renewcommand{\title}[1]{\textbf{\large{#1}}\\}
+\renewcommand{\line}{\begin{tabularx}{\textwidth}{X>{\raggedleft}X}\hline\\\end{tabularx}\\[-0.5cm]}
+\newcommand{\leftright}[2]{\begin{tabularx}{\textwidth}{X>{\raggedleft}X}#1%
+& #2\\\end{tabularx}\\[-1cm]}
+
+%\linespread{2} %-- Uncomment for Double Space
+\begin{document}
+
+\title{\center{Monte Carlo Simulation of the Lennard Jones Fluid in the Canonical Ensemble}}
+\rule{\textwidth}{1pt}
+\leftright{The Molecular Sciences Software Institute}{Eliseo Marin-Rimoldi} %-- left and right positions in the header
+
+\bigskip
+
+\section{Introduction}
+\subsection{Monte Carlo Integration}
+
+In statistical mechanics, we are interested in computing averages of
+thermodynamic properties as a function of atom positions and momenta
+\cite{Hill.Book}
+\cite{McQuarrie.Book}.
+A thermodynamic average can be computed using the following
+expectation value integral
+\begin{equation}
+	\left<Q\right> = \int Q\left(\textbf{r}^N\right)
+	\rho\left(\textbf{r}^N\right) d\textbf{r}^N
+	\label{eq.statMechAverage}
+\end{equation}
+where $Q$ is the thermodynamic quantity of interest, $\textbf{r}^N$ is a $3N$
+dimensional vector containing the positions
+of the $N$ atoms,
+and $\rho\left(\textbf{r}^N\right)$ is the probability
+density whose functional form depends on the statistical mechanical ensemble
+of interest. Note that the integrals over momenta have been factored out, as
+they can be evaluated
+analytically. The integral \ref{eq.statMechAverage} is very hard to solve
+even for small atomic systems.
+For instance, a monoatomic system of 10 atoms leads to a 30-dimensional
+integral. Consequently, we need to resort to a numerical scheme if we want to
+study atomic systems.
+
+Monte Carlo methods are numerical techniques
+frequently used to estimate complex multidimensional
+integrals which otherwise
+ could not be performed
+ \cite{Newman.Book}.
+ For instance, the integral of the function $f(\textbf{x})$,
+ where \textbf{x} is a higher-dimensional vector, is approximated as
+ \begin{equation}
+	 I = \int_V f(\textbf{x}) d\textbf{x} = \int_V
+	 \frac{f(\textbf{x})}{h(\textbf{x})} h(\textbf{x}) d\textbf{x} = \left<
+	 \frac{f(\textbf{x})}{h(\textbf{x})} \right>_{h(\textbf{x})}
+	 \label{eq.averageGeneral}
+ \end{equation}
+
+ The idea of a MC integration is to estimate the expectation value
+ $\left<\frac{f(\textbf{x})}{h(\textbf{x})}\right>_{{h(\textbf{x})}}$ by
+ generating random samples of \textbf{x} according to the distribution
+ $h(\textbf{x})$. 
+
+\subsection{Importance Sampling}
+
+In Equation \ref{eq.averageGeneral}, we are free to chose the probability
+distribution
+$h(\textbf{x})$. The simplest case is to uniformly generate $\textbf{x}$
+in the volume $V$. In this way, $h(\textbf{x})$ becomes constant as
+\begin{equation}
+	h(\textbf{x}) = \frac{1}{V}
+	\label{eq.uniformDist}
+\end{equation}
+
+Using this distribution, the integral \ref{eq.averageGeneral} becomes
+\begin{equation}
+	I = \int_V f(\textbf{x}) d\textbf{x} = \frac{V}{N} \sum_{i=1}^N
+	f(\textbf{x}_i)
+	\label{eq.averageUniform}
+\end{equation}
+where N is the total number of random numbers and $f(\textbf{x}_i)$ is the
+integrand evaluated using the $i^{th}$random number. While using a
+uniform probability works for simple cases, it generally does not work
+for complex problems.
+
+The problem at hand involves the evaluation of $N$-dimensional
+integral \ref{eq.statMechAverage}, which is
+dominated by a small subset of
+atom positions
+\cite{Hill.Book}
+\cite{McQuarrie.Book}. Using a 
+uniform probability distribution $h(\textbf{r}^N)$ to generate
+representative samples of this subset is not efficient,
+as most states generated this way would have a low weight.
+
+A solution to this problem is to generate positions $\textbf{r}^N$ according to
+the distribution $\rho\left(\textbf{r}^N\right)$. This is a way to generate
+relevant configurations more frequently than configurations that have low
+probability.
+Mathematically, we set $h(\textbf{r}^N)=\rho\left(\textbf{r}^N\right)$.
+This idea is known as \textit{importance sampling}.
+
+Combining equations \ref{eq.averageGeneral}, \ref{eq.statMechAverage}
+and the condition $h(\textbf{r}^N)=\rho\left(\textbf{r}^N\right)$,
+we get that
+\begin{equation}
+	%\left<Q\right> = \frac{\int Q e^{-\beta U\left(\textbf{r}^N\right)}
+	%d\textbf{r}^N}{\int e^{-\beta U\left(\textbf{r}^N\right)}
+	%d\textbf{r}^N}
+	\left<Q\right> = \frac{1}{N} \sum_{i=1}^N Q\left(\textbf{r}_i^N\right)
+	\label{eq.importanceSamplingAverage}
+\end{equation}
+thus, we can get thermodynamic properties by simply computing an arithmetic
+average, given
+that we perform importance sampling.
+
+\subsection{Detailed Balance Condition}
+
+The question now becomes how to generate such atomic positions $\textbf{r}^N$
+(or \textit{states}) distributed
+according to $\rho\left(\textbf{r}^N\right)$. In 1953, Metropolis introduced a
+solution based on Markov chains
+\cite{Metropolis.JCP.21.1087.1953}. 
+He proposed to use the detailed balance
+condition in order to ensure proper configurational sampling from
+the statistical mechanical distribution of interest. In order to generate
+a new configuration $n$ from an old configuration $m$,
+the detailed balance condition is
+
+\begin{equation}
+	\rho_m\left(\textbf{r}^N\right) \alpha \left(m \rightarrow n \right)
+	P_{acc} \left(m \rightarrow n \right) =
+	\rho_n\left(\textbf{r}^N\right) \alpha \left(n \rightarrow m \right)
+	P_{acc} \left(n \rightarrow m \right) 
+	   \label{eq.detailedBalance}
+\end{equation}
+
+Where $\rho_m\left(\textbf{r}^N\right)$ is the probability of observing
+state $m$,
+$\alpha \left(m \rightarrow n \right)$ is the probability of
+attempting to generate a new state $n$ starting from a state $m$  and 
+$P_{acc} \left(n \rightarrow m \right)$ is the probability of accepting 
+such transition. Basically, the condition of detailed balance tells us that the
+``flux'' of transitions
+from state $m$ to state $n$ equals the flux from state $n$ to state $m$ at
+equilibrium.
+
+There are many ways to satisfy equation \ref{eq.detailedBalance}. Metropolis suggested to use
+the $min$ function as
+
+\begin{equation}
+	P_{acc}(m \rightarrow n) = \text{min} \left[1,\frac{\alpha \left(n
+		\rightarrow m \right)}{\alpha \left(m \rightarrow n \right)}
+		\frac{\rho_n\left(\textbf{r}^N\right)}{\rho_m\left(\textbf{r}^N\right)}
+	\right]
+	\label{eq.detailedBalanceFinal}
+\end{equation}
+
+
+\section{Canonical Ensemble Monte Carlo of a Lennard Jones Fluid}
+
+Assume we have $N$ monoatomic particles that interact using the Lennard-Jones
+(LJ)
+potential
+
+\begin{equation}
+U\left(r_{ij} \right) = 4 \epsilon \left[\left(\frac{\sigma}{r_{ij}}\right)^{12} -\left(\frac{\sigma}{r_{ij}}\right)^{6} \right]
+\end{equation}
+where $r_{ij}$, $\sigma$ and $\epsilon$ are the inter-particle distance, distance where interaction energy is zero and depth of the energy potential, respectively. 
+
+Our goal is to generate a set of states of $N$ LJ particles distributed
+according to the canonical (NVT) ensemble
+
+\begin{equation}
+	\rho_n \left(\textbf{r}^N \right) = \frac{ e^{-\beta U \left( \textbf{r}^N \right) }}{\int e^{-\beta U \left(  \textbf{r}^N \right)} d\textbf{r}^N }
+	\label{eq:nvtDist}
+\end{equation}
+
+
+where $U \left( \textbf{r}^N \right)$, $\beta = \frac{1}{k_B T}$, $k_B$ and $T$ are the energy of the system, Boltzmann constant
+and system temperature, respectively. Note that 
+$U \left( \textbf{r}^N \right)$ is
+given by
+
+\begin{equation}
+	U \left( \textbf{r}^N \right) = \frac{1}{2} \sum_i \sum_{j} U \left( r_{ij} \right)
+\end{equation}
+
+Substituting \ref{eq:nvtDist} into \ref{eq.detailedBalanceFinal} and
+assuming $\alpha \left( n \rightarrow m \right) = 
+\alpha \left( m \rightarrow n \right)$, we get
+
+\begin{equation}
+	P_{acc}(m \rightarrow n) = \text{min} \left[
+		1,e^{-\beta \Delta U}
+	\right]
+	\label{eq.detailedBalanceNVT}
+\end{equation}
+
+Where $\Delta U$ is the difference in potential energy of the system
+between the new state $n$ and the old state $m$. Note that the argument
+of the energy $\textbf{r}^N$ has been dropped for clarity.
+
+\subsection{Flow of the Calculations in Metropolis Monte Carlo}
+
+The following workflow can be used to implement the Metropolis algorithm
+to sample the canonical ensemble of configurations of LJ particles
+
+\begin{enumerate}
+\item Generate an inital system state $m$.
+\item Choose an atom at random from old state $m$.
+\item Generate a new state $n$ by
+	translating a LJ particle by a random displacement.
+	This displacement should not be too large as this would
+	likely result in particle overlaps, but should not be too small
+	as this would result in a slow sampling of configurational space.
+	More on this below.
+\item The difference in energy between the new and old states is computed.
+\item The new state is accepted or rejected using the Metropolis criterion.
+	Practically, this can be implemented as follows. 
+	If a move from $m$ to $n$ is ``downhill'', $\Delta U \leq 0$,
+	the move is always accepted. For ``uphill'' moves, a random
+	number $\zeta$ is generated uniformly on (0,1).  If $\zeta <
+	\exp[-\beta {\Delta U}]$, the move is
+	accepted.  Otherwise, the move is rejected. 
+\end{enumerate}
+
+\subsection{Technical considerations}
+
+\textbf{Starting Configuration.} We
+know that the final result should be independent of the starting
+configuration, but from a practical standpoint, we have to start someplace. 
+For this particular example, a good way to start is to place atoms
+in a lattice. By performing translation moves, the lattice will ``melt''
+and liquid configurations will be obtained. During this ``melting'' process, 
+we do not take averages of thermodynamic properties, as we would be 
+``equilibrating'' the system.
+Once a configuration has been generated and a simulation run, you
+can always use a ``snapshot'' from this simulation as a starting point for a
+new configuration, as long as the conditions are similar.
+
+\textbf{Equilibration.} To check whether the system has reached equilibrium, we 
+monitor the potential energy and pressure.  We look for 
+no systematic drift in either quantity, only 
+fluctuations about a mean. This is usually achieved within ~1000N
+translations attempts (or Monte Carlo steps) for low molecular weight
+systems.
+
+\textbf{System size and periodic boundary conditions.} A typical molecular 
+simulation is carried out anywhere from 
+10 to 10,000 particles. This amount of particles is far away of being
+representative of a bulk liquid. To get around this problem, we employ a trick
+called
+periodic boundary conditions. The primary simulation box is surrounded
+by copy images of itself. For a cubic simulation, there would be 26 
+images around the central box. This trick has two implications
+\begin{enumerate}
+	\item If the position of a particle (i.e. Cartesian coordinates) is
+		outside the simulation box after a particle translation, 
+		an identical particle should enter the box through the
+		opposite face of the box, as shown in Figure.
+	\item When measuring distances used in the evaluation of the LJ
+		potential, we should measure the \textit{minimum
+		image}. See Image.
+\end{enumerate}
+
+\textbf{Maximum displacement.} As mentioned before, part of the ``recipe''
+of this method is translating a LJ particle by a random amount. This
+displacement should not be too large as this would resulte in particle overlaps. It also should not be too small, as this would result in unefficient sampling.
+A common practice is that the maximum particle displacement is adjusted
+to achieve 50\% acceptance translation rates. 
+
+\textbf{Energy truncation and tail corrections}
+
+
+\subsection{Reference calculations}
+
+\href{https://mmlapps.nist.gov/srs/LJ_PURE/mc.htm}{NIST LJ reference}
+
+\href{https://www.nist.gov/mml/csd/chemical-informatics-research-group/lennard-jones-fluid-reference-calculations}{LJ Energy states}
+
+\newpage
+%
+%\bibliographystyle{aip.bst}
+%\bibliography{references,konrad_references,jrncodes,mainbib-ds}
+
+\end{document}
