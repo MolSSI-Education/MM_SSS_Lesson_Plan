@@ -26,7 +26,6 @@ class ForceFieldManager(object):
         ePair = 0.0
         for iParticle in range(0, box.numParticles):
             eInter = self.getMolEnergy(iParticle, box)
-            box.particle[iParticle].energy = eInter
-            ePair += eInter / 2.0
-        ePair = ePair
+            ePair = ePair + eInter
+        ePair = ePair/2.0
         return ePair

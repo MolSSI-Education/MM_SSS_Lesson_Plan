@@ -2,8 +2,7 @@ import numpy as np
 
 kB = 0.0083144621    #Boltzmann constant, kJ/molK
 
-
-class simulation(object):
+class Simulation(object):
     def __init__(self, method, temperature, steps, printProp, printXYZ, maxDisp, ffManager,
                  boxManager):
 
@@ -25,38 +24,49 @@ class simulation(object):
             nAccept = 0
             for iStep in range(0, self.steps):
                 iParticle = np.random.randint(box.numParticles)
-                randomDisplacement = (2.0 * np.random.rand(3) - 1.0) * self.maxDisp
-                oldPosition = box.particle[iParticle].position
+                randomDisplacement = (2.0 * np.random.rand(3) - 1.0) * \
+                        self.maxDisp
+
+                oldPosition = box.particle[iParticle].position.copy()
+                oldEnergy = self.ffManager.getMolEnergy(iParticle,box)
+                
                 box.particle[iParticle].position += randomDisplacement
                 box.particle[iParticle].position = \
                     box.particle[iParticle].position - box.length * \
                     np.round(box.particle[iParticle].position/box.length)
+
                 newEnergy = self.ffManager.getMolEnergy(iParticle, box)
-                oldEnergy = box.particle[iParticle].energy
                 dE = newEnergy - oldEnergy
+
                 accept = False
                 if dE <= 0.0:
                     accept = True
-                    nAccept = nAccept + 1
                 else:
-                    randomNumber = np.random.rand(1)
+                    randomNumber = np.random.rand(1)[0]
                     factor = self.beta * dE
                     pAcc = np.exp(-factor)
                     if randomNumber < pAcc:
                         accept = True
-                        nAccept = nAccept + 1
+
                 if accept:
+                    nAccept = nAccept + 1
                     pairEnergy = pairEnergy + dE
-                    box.particle[iParticle].energy = newEnergy
                 else:
-                    box.particle[iParticle].position = oldPosition
+                    box.particle[iParticle].position = oldPosition.copy()
+
                 if np.mod(iStep + 1, self.printProp) == 0:
+                    accRate = float(nAccept)/(float(iStep)+1) * 100
                     totalEnergy = \
                             (pairEnergy + tailCorrection)/ \
                             (self.ffManager.ForceField.parms[1]* \
                             box.numParticles)
-                    print(iStep+1, \
-                            totalEnergy, \
-                            float(nAccept)/(float(iStep)+1) * 100)
+                    print(iStep+1, totalEnergy, accRate, self.maxDisp)
+
+                    if accRate < 38.0:
+                        self.maxDisp = self.maxDisp*0.8
+                    elif accRate > 42.0:
+                        self.maxDisp = self.maxDisp*1.2
+
                 if np.mod(iStep, self.printXYZ) == 0:
                     pass
+

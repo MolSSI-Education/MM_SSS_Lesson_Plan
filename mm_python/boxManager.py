@@ -1,20 +1,14 @@
 import numpy as np
-from .particle import particle
+from .Particle import Particle
 
-class box(object):
-    def __init__(self, length):
-        self.length = length
-        self.particle = []
-        self.numParticles = 0
-
-class boxManager(object):
+class BoxManager(object):
     def __init__(self, box):
         self.box = box
 
     def addParticles(self, n, method):
         if method == "random":
             for iParticle in range(0, n):
-                self.box.particle.append(particle())
+                self.box.particle.append(Particle())
                 newPosition = (0.5 - np.random.rand(3)) * self.box.length
                 self.box.particle[iParticle].position = newPosition
                 self.box.numParticles = self.box.numParticles + 1
@@ -26,7 +20,7 @@ class boxManager(object):
             counterPosition = np.zeros((3, ))
             for iParticle in range(0, n):
                 self.box.numParticles = self.box.numParticles + 1
-                self.box.particle.append(particle())
+                self.box.particle.append(Particle())
                 self.box.particle[iParticle].position = \
                     (counterPosition + 0.5)*self.box.length/nSide
                 counterPosition[0] += 1
@@ -49,7 +43,7 @@ class boxManager(object):
                 if lenLine == 1:
                     self.box.numParticles = int(lineSplit[0])
                 if lenLine > 1:
-                    self.box.particle.append(particle())
+                    self.box.particle.append(Particle())
                     iParticle = int(lineSplit[0]) - 1
                     x = float(lineSplit[1])
                     y = float(lineSplit[2])
@@ -59,5 +53,14 @@ class boxManager(object):
                     self.box.particle[iParticle].position[1] = y
                     self.box.particle[iParticle].position[2] = z
 
-                    self.box.particle[iParticle].position *= \
-                            3.73
+    def printXYZ(self, toFile):
+
+       toFile = open(toFile,'wa+')
+       toFile.write(str(self.box.numParticles)+"\n\n")
+       for iParticle in range(0,self.box.numParticles):
+           index = "{0:4d}".format(iParticle+1)
+           x = "{0:10.5f}".format(self.box.particle[iParticle].position[0])
+           y = "{0:10.5f}".format(self.box.particle[iParticle].position[1])
+           z = "{0:10.5f}".format(self.box.particle[iParticle].position[2])
+           toFile.write("   ".join([index,x,y,z,"\n"]))
+

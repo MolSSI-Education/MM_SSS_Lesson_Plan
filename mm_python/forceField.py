@@ -20,7 +20,7 @@ class ForceField(object):
         self.cutoff2 = np.power(cutoff, 2)
 
 
-class lennardJones(ForceField):
+class LennardJones(ForceField):
     def __init__(self, parms, cutoff):
         ForceField.__init__(self, "lennardJones", parms, cutoff)
 
