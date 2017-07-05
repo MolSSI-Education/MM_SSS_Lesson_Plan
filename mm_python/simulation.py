@@ -3,8 +3,59 @@ import numpy as np
 kB = 0.0083144621    #Boltzmann constant, kJ/molK
 
 class Simulation(object):
-    def __init__(self, method, temperature, steps, printProp, printXYZ, maxDisp, ffManager,
-                 boxManager):
+    """
+    Class containing the main driver for running an MC simulation
+    of the Lennard Jones Fluid.
+    """
+    def __init__(self, method, temperature, steps, printProp, printXYZ, maxDisp, ffManager, boxManager):
+        """
+        Constructor of a simulation object.
+ 
+        Parameters
+        ----------
+	method: string
+	Only supported value is "monteCarlo".
+
+	temperature: float
+	System temperature in K
+
+	steps: integer
+	Number of Monte Carlo steps
+
+	printProp: integer
+	Frequency of printing the thermodynamic properties of the system
+	(e.g. energy)
+
+	printXYZ: integer
+	Frequency of printing the Cartesian coordinates of the system
+
+	maxDisp: float
+	Initial maximum displacement of the LJ spheres
+
+	ffManager: ForceFieldManager
+        Force Field Manager instance associated to simulation force field
+
+        boxManager: BoxManager
+        Box Manager instance associated to simulation box
+	
+
+        Returns
+        ----------
+        None
+
+        Raises
+        ----------
+        None
+
+
+        Notes
+        ----------
+        Output energy will be printed in reduced units.
+        Maximum displacement will be adjusted to achieve 40% acceptance rate.
+
+
+        """
+
 
         self.method = method
         self.temperature = temperature
@@ -17,6 +68,10 @@ class Simulation(object):
         self.beta = 1.0 / (self.temperature)
 
     def run(self):
+        """
+        Main driver to perform a Metropolis Monte Carlo simulation of the
+        Lennard Jones fuid.
+        """
         if self.method == "monteCarlo":
             box = self.boxManager.box
             pairEnergy = self.ffManager.getPairEnergy(box)

@@ -2,10 +2,43 @@ import numpy as np
 from .Particle import Particle
 
 class BoxManager(object):
+    """
+    Class to perform actions on a given box. The main attribute of this
+    class is self.box, which represents the box on which actions will
+    be performed. 
+    """
     def __init__(self, box):
         self.box = box
 
     def addParticles(self, n, method):
+        """
+        Adds n particles to the simulation box using two methods: random
+        and lattice. The first one inserts particles randomly. The second
+        inserts them in a lattice. 
+
+	Parameters
+    	----------
+    	n : integer 
+        Number of particles to be inserted
+
+    	method : string
+	Method to insert particles. Values can be "random" or "lattice".
+
+	Returns
+    	----------
+	None
+
+
+	Raises
+    	----------
+	None
+
+
+	Notes
+    	----------
+	None
+
+        """
         if method == "random":
             for iParticle in range(0, n):
                 self.box.particle.append(Particle())
@@ -35,6 +68,29 @@ class BoxManager(object):
                 self.box.particle[iParticle].position -= 0.5
 
     def getConfigFromFile(self, restartFile):
+        """
+	Reads in a configuration in xyz format.
+
+	Parameters
+    	----------
+    	restartFile: string
+	Location of the xyz file containing the configuration
+
+	Returns
+    	----------
+	None
+
+
+	Raises
+    	----------
+	None
+
+
+	Notes
+    	----------
+	None
+
+        """
 
         with open(restartFile, "r") as f:
             for lineNbr, line in enumerate(f):
@@ -54,7 +110,28 @@ class BoxManager(object):
                     self.box.particle[iParticle].position[2] = z
 
     def printXYZ(self, toFile):
+       """
+       Prints the current state of the simulation to an xyz file.
 
+       Parameters
+       ----------
+       toFile: the file where the coordinates will be dumped.
+
+       Returns
+       ----------
+       None
+
+
+       Raises
+       ----------
+       None
+
+
+       Notes
+       ----------
+       None
+
+       """
        toFile = open(toFile,'wa+')
        toFile.write(str(self.box.numParticles)+"\n\n")
        for iParticle in range(0,self.box.numParticles):
@@ -63,4 +140,3 @@ class BoxManager(object):
            y = "{0:10.5f}".format(self.box.particle[iParticle].position[1])
            z = "{0:10.5f}".format(self.box.particle[iParticle].position[2])
            toFile.write("   ".join([index,x,y,z,"\n"]))
-
