@@ -76,11 +76,12 @@ class Simulation(object):
             box = self.boxManager.box
             pairEnergy = self.ffManager.getPairEnergy(box)
             tailCorrection = self.ffManager.ForceField.getTailCorrection(box)
+            pressureCorrection = self.ffManager.ForceField.getPressureCorrection(box)
             nAccept = 0
             for iStep in range(0, self.steps):
                 iParticle = np.random.randint(box.numParticles)
-                randomDisplacement = (2.0 * np.random.rand(3) - 1.0) * \
-                        self.maxDisp
+                randomDisplacement = (2.0 * np.random.rand(3) - 1.0)  \
+                        * self.maxDisp
 
                 oldPosition = box.particle[iParticle].position.copy()
                 oldEnergy = self.ffManager.getMolEnergy(iParticle,box)
@@ -115,7 +116,13 @@ class Simulation(object):
                             (pairEnergy + tailCorrection)/ \
                             (self.ffManager.ForceField.parms[1]* \
                             box.numParticles)
-                    print(iStep+1, totalEnergy, accRate, self.maxDisp)
+                    pressure = self.ffManager.getSystemVirial(box)
+                    pressure += 3.0*box.numParticles/self.beta
+                    pressure /= 3.0*np.power(box.length,3)
+                    pressure += pressureCorrection
+                    pressure *= np.power(self.ffManager.ForceField.parms[0],3) \
+                            / self.ffManager.ForceField.parms[1] 
+                    print(iStep+1, totalEnergy, pressure, accRate, self.maxDisp)
 
                     if accRate < 38.0:
                         self.maxDisp = self.maxDisp*0.8
