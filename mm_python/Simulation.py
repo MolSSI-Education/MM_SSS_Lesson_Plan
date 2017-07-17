@@ -73,6 +73,7 @@ class Simulation(object):
         Lennard Jones fuid.
         """
         if self.method == "monteCarlo":
+            trajectory = open('trajectory.xyz', 'w')
             box = self.boxManager.box
             pairEnergy = self.ffManager.getPairEnergy(box)
             tailCorrection = self.ffManager.ForceField.getTailCorrection(box)
@@ -123,12 +124,14 @@ class Simulation(object):
                     pressure *= np.power(self.ffManager.ForceField.parms[0],3) \
                             / self.ffManager.ForceField.parms[1] 
                     print(iStep+1, totalEnergy, pressure, accRate, self.maxDisp)
+                    #print(iStep+1, totalEnergy, accRate, self.maxDisp)
 
                     if accRate < 38.0:
                         self.maxDisp = self.maxDisp*0.8
                     elif accRate > 42.0:
                         self.maxDisp = self.maxDisp*1.2
 
-                if np.mod(iStep, self.printXYZ) == 0:
-                    pass
+                if np.mod(iStep + 1, self.printXYZ) == 0:
+                    self.boxManager.printXYZ(trajectory)
 
+        trajectory.close()

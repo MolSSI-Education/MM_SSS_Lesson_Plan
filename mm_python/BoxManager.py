@@ -109,7 +109,7 @@ class BoxManager(object):
                     self.box.particle[iParticle].position[1] = y
                     self.box.particle[iParticle].position[2] = z
 
-    def printXYZ(self, toFile):
+    def printXYZ(self, trajectory):
        """
        Prints the current state of the simulation to an xyz file.
 
@@ -132,11 +132,10 @@ class BoxManager(object):
        None
 
        """
-       toFile = open(toFile,'wa+')
-       toFile.write(str(self.box.numParticles)+"\n\n")
+       trajectory.write(str(self.box.numParticles)+"\n\n")
        for iParticle in range(0,self.box.numParticles):
            index = "{0:4d}".format(iParticle+1)
            x = "{0:10.5f}".format(self.box.particle[iParticle].position[0])
            y = "{0:10.5f}".format(self.box.particle[iParticle].position[1])
            z = "{0:10.5f}".format(self.box.particle[iParticle].position[2])
-           toFile.write("   ".join([index,x,y,z,"\n"]))
+           trajectory.write("   ".join([index,x,y,z,"\n"]))
