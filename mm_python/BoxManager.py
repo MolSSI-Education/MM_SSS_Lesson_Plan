@@ -9,7 +9,7 @@ class BoxManager(object):
     def __init__(self, box):
         self.box = box
 
-    def addParticles(self, n, method):
+    def addParticles(self, n, method, mass = 0.0):
         """
         Adds n particles to the simulation box using two methods: random
         and lattice. The first one inserts particles randomly. The second
@@ -36,14 +36,17 @@ class BoxManager(object):
 
         """
 
+        mass = mass / 6.023e23 * 10**-3
         self.box.numParticles = n 
 
         if method == "random":
             self.box.coordinates = (0.5 - np.random.rand(n,3)) * self.box.length
+            self.box.mass = mass 
 
         elif method == "lattice":
             nSide = 1
             self.box.coordinates = np.zeros((n,3))
+            self.box.mass = mass 
             while np.power(nSide, 3) < n:
                 nSide += 1
             counterPosition = np.zeros((3, ))
@@ -61,6 +64,39 @@ class BoxManager(object):
 
             for iParticle in range(0, self.box.numParticles):
                 self.box.coordinates[iParticle] -= 0.5
+
+
+    def assignVelocities(self, temperature):
+        """
+
+	Parameters
+    	----------
+        None
+
+	Returns
+    	----------
+	None
+
+
+	Raises
+    	----------
+	None
+
+
+	Notes
+    	----------
+	None
+
+        """
+
+        sigma = np.sqrt(1.38e-23*temperature / self.box.mass)
+        self.box.velocities = np.random.normal(loc = 0.0, scale = sigma, \
+                size = (self.box.numParticles,3))
+
+        momentum = np.sum(self.box.mass * self.box.velocities, axis = 0)
+
+        self.box.velocities = self.box.velocities \
+            - momentum/(self.box.numParticles * self.box.mass)
 
     def getConfigFromFile(self, restartFile):
         """
