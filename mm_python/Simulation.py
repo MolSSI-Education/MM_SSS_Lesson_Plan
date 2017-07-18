@@ -1,6 +1,5 @@
 import numpy as np
 
-kB = 0.0083144621    #Boltzmann constant, kJ/molK
 
 class Simulation(object):
     """
@@ -74,14 +73,12 @@ class Simulation(object):
         """
         if self.method == "monteCarlo":
             trajectory = open('trajectory.xyz', 'w')
+            self.boxManager.printXYZ(trajectory)
             box = self.boxManager.box
-            totalEnergy = self.ffManager.getTotalEnergy(box)
+            totalPairEnergy = self.ffManager.getTotalPairEnergy(box)
             tailCorrection = self.ffManager.ForceField.getTailCorrection(box)
             pressureCorrection = self.ffManager.ForceField.getPressureCorrection(box)
-            self.boxManager.printXYZ(trajectory)
             nAccept = 0
-            print totalEnergy, tailCorrection
-            raw_input()
             for iStep in range(0, self.steps):
                 iParticle = np.random.randint(box.numParticles)
                 randomDisplacement = (2.0 * np.random.rand(3) - 1.0)  \
@@ -89,21 +86,14 @@ class Simulation(object):
 
                 oldPosition = box.coordinates[iParticle].copy()
                 oldEnergy = self.ffManager.getMolEnergy(iParticle,box)
-                #print ("New move")
-                #print box.coordinates
-                #print iParticle, oldPosition, oldEnergy
                 box.coordinates[iParticle] += randomDisplacement
                 box.coordinates[iParticle] = \
                     box.coordinates[iParticle] - box.length * \
                     np.round(box.coordinates[iParticle]/box.length)
 
                 newEnergy = self.ffManager.getMolEnergy(iParticle, box)
-                #print iParticle, box.coordinates[iParticle], newEnergy
-                #print box.coordinates
                 dE = newEnergy - oldEnergy
-
                 accept = False
-                #print dE
                 if dE <= 0.0:
                     accept = True
                 else:
@@ -112,20 +102,16 @@ class Simulation(object):
                     pAcc = np.exp(-factor)
                     if randomNumber < pAcc:
                         accept = True
-                #print accept
                 if accept:
                     nAccept = nAccept + 1
-                    totalEnergy = totalEnergy + dE
+                    totalPairEnergy = totalPairEnergy + dE
                 else:
                     box.coordinates[iParticle] = oldPosition.copy()
-                #print box.coordinates
-                #print totalEnergy
-                #raw_input()
 
                 if np.mod(iStep + 1, self.printProp) == 0:
                     accRate = float(nAccept)/(float(iStep)+1) * 100
                     totalEnergy = \
-                            (totalEnergy + tailCorrection)/ \
+                            (totalPairEnergy + tailCorrection)/ \
                             (self.ffManager.ForceField.parms[1]* \
                             box.numParticles)
                     pressure = self.ffManager.getSystemVirial(box)
@@ -135,7 +121,6 @@ class Simulation(object):
                     pressure *= np.power(self.ffManager.ForceField.parms[0],3) \
                             / self.ffManager.ForceField.parms[1] 
                     print(iStep+1, totalEnergy, pressure, accRate, self.maxDisp)
-                    #print(iStep+1, totalEnergy, accRate, self.maxDisp)
 
                     if accRate < 38.0:
                         self.maxDisp = self.maxDisp*0.8

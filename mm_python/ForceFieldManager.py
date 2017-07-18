@@ -47,7 +47,7 @@ class ForceFieldManager(object):
                 eij += self.ForceField.evaluate(rij2)
         return eij
 
-    def getTotalEnergy(self, box):
+    def getTotalPairEnergy(self, box):
         """
 	Computes the inter-molecular energy of a box.
 

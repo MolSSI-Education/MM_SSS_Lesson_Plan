@@ -1,5 +1,4 @@
 import numpy as np
-from .Particle import Particle
 
 class BoxManager(object):
     """
@@ -40,11 +39,6 @@ class BoxManager(object):
         self.box.numParticles = n 
 
         if method == "random":
-            #for iParticle in range(0, n):   
-                #self.box.particle.append(Particle())
-                #newPosition = (0.5 - np.random.rand(3)) * self.box.length
-                #self.box.particle[iParticle].position = newPosition
-                #self.box.numParticles = self.box.numParticles + 1
             self.box.coordinates = (0.5 - np.random.rand(n,3)) * self.box.length
 
         elif method == "lattice":
