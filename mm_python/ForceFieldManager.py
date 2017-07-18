@@ -5,32 +5,6 @@ class ForceFieldManager(object):
     def __init__(self, ForceField):
         self.ForceField = ForceField
 
-    def assignSystemForceField(self, box):
-        """
-	Assigns force field parameters to each particle in the box
-
-        Parameters
-        ----------
-	box: box
-	The box containing the particles.
-
-        Returns
-        ----------
-        None
-
-
-        Raises
-        ----------
-        None
-
-
-        Notes
-        ----------
-        None
-
-        """
-        for iParticle in range(0, box.numParticles):
-            box.particle[iParticle].parms = self.ForceField.parms
 
     def getMolEnergy(self, iParticle, box):
         """
@@ -61,11 +35,11 @@ class ForceFieldManager(object):
         None
 
         """
-        iPosition = box.particle[iParticle].position
+        iPosition = box.coordinates[iParticle]
         eij = 0.0
         for jParticle in range(0, box.numParticles):
             if iParticle == jParticle: continue
-            jPosition = box.particle[jParticle].position
+            jPosition = box.coordinates[jParticle]
             rij = iPosition - jPosition
             rij = rij - box.length * np.round(rij / box.length)
             rij2 = np.sum(np.power(rij, 2))
@@ -73,7 +47,7 @@ class ForceFieldManager(object):
                 eij += self.ForceField.evaluate(rij2)
         return eij
 
-    def getPairEnergy(self, box):
+    def getTotalEnergy(self, box):
         """
 	Computes the inter-molecular energy of a box.
 
@@ -131,11 +105,11 @@ class ForceFieldManager(object):
         None
 
         """
-        iPosition = box.particle[iParticle].position
+        iPosition = box.coordinates[iParticle]
         wPair = 0.0
         for jParticle in range(0, box.numParticles):
             if iParticle == jParticle: continue
-            jPosition = box.particle[jParticle].position
+            jPosition = box.coordinates[jParticle]
             rij = iPosition - jPosition
             rij = rij - box.length * np.round(rij / box.length)
             rij2 = np.sum(np.power(rij, 2))

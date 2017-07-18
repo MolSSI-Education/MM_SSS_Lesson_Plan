@@ -71,7 +71,7 @@ class LennardJones(ForceField):
 
         Returns
         ----------
-        force: float
+        pairVirial: float
         Force between two particles
 
         Raises
@@ -88,8 +88,8 @@ class LennardJones(ForceField):
 	sigByR2 =  np.power(self.parms[0],2) / rij2
         sigByR6 = np.power(sigByR2,3)
         sigByR12 = np.power(sigByR6,2)
-        force = 24.0 * self.parms[1] * (2.0*sigByR12 - sigByR6)
-	return force
+        pairVirial = 24.0 * self.parms[1] * (2.0*sigByR12 - sigByR6)
+	return pairVirial
 
     def getTailCorrection(self, box):
 	"""

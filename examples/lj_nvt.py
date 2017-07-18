@@ -28,12 +28,11 @@ myForceField = mmpy.LennardJones(
     parms=(sigma, epsilon), cutoff= 0.5 * boxLength)
 
 myForceFieldManager = mmpy.ForceFieldManager(myForceField)
-myForceFieldManager.assignSystemForceField(myBox)
 
 mySimulation = mmpy.Simulation(
     method="monteCarlo",
     temperature=realTemperature,
-    steps=1000000,
+    steps=50000,
     printProp=1000,
     printXYZ=1000,
     maxDisp=0.1*sigma,
@@ -42,4 +41,4 @@ mySimulation = mmpy.Simulation(
 
 mySimulation.run()
 
-#mySimulation.analyze.getRDF(parms)
+#mySimulation.getRDF(trajectory = "trajectory.xyz", bins=50)

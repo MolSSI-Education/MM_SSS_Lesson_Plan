@@ -1,3 +1,5 @@
+import numpy as np
+
 class Box(object):
     """
     Class to define box objects. The attributes are the box length (length),
@@ -6,5 +8,6 @@ class Box(object):
     """
     def __init__(self, length):
         self.length = length
-        self.particle = []
-        self.numParticles = 0
+        #self.numParticles = 0
+        #self.coordinate = np.zeros((numParticles,3))
+        #self.velocity = np.zeros((numParticles,3))
