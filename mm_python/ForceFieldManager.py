@@ -78,7 +78,7 @@ class ForceFieldManager(object):
         ePair = ePair/2.0
         return ePair
 
-    def getMolVirial(self, iParticle, box):
+    def getMolVirial(self, iParticle, box, getForces = False):
         """
 	Computes the virial interaction of a given particle
 
@@ -115,6 +115,8 @@ class ForceFieldManager(object):
             rij2 = np.sum(np.power(rij, 2))
             if rij2 < self.ForceField.cutoff2:
                 wPair += self.ForceField.getPairVirial(rij2)
+                if getForces == True:
+                    box.forces[iParticle] += wPair * rij / rij2
         return wPair
 
     def getSystemVirial(self, box):
@@ -147,3 +149,26 @@ class ForceFieldManager(object):
             wTotal = wTotal + wInter
         wTotal = wTotal/2.0
         return wTotal
+
+    def getSystemForces(self, box):
+        """
+
+        Parameters
+        ----------
+
+        Returns
+        ----------
+
+        Raises
+        ----------
+        None
+
+
+        Notes
+        ----------
+        None
+
+        """
+        box.forces = np.zeros((box.numParticles,3))
+        for iParticle in range(0, box.numParticles):
+            _ = self.getMolVirial(iParticle, box, getForces = True) 

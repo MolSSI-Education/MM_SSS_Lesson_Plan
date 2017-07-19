@@ -7,3 +7,4 @@ from BoxManager import BoxManager
 from ForceFieldManager import ForceFieldManager 
 from ForceField import LennardJones
 from Simulation import Simulation
+from Integrators import VelocityVerlet

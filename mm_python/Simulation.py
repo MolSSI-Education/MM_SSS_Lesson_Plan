@@ -6,7 +6,9 @@ class Simulation(object):
     Class containing the main driver for running an MC simulation
     of the Lennard Jones Fluid.
     """
-    def __init__(self, method, temperature, steps, printProp, printXYZ, maxDisp, ffManager, boxManager):
+    def __init__(self, method, temperature, steps, printProp, printXYZ,
+            ffManager, boxManager, maxDisp = 0.0, 
+            integrator = None):
         """
         Constructor of a simulation object.
  
@@ -65,6 +67,7 @@ class Simulation(object):
         self.ffManager = ffManager
         self.boxManager = boxManager
         self.beta = 1.0 / (self.temperature)
+        self.integrator = integrator
 
     def run(self):
         """
@@ -77,7 +80,8 @@ class Simulation(object):
             box = self.boxManager.box
             totalPairEnergy = self.ffManager.getTotalPairEnergy(box)
             tailCorrection = self.ffManager.ForceField.getTailCorrection(box)
-            pressureCorrection = self.ffManager.ForceField.getPressureCorrection(box)
+            pressureCorrection = \
+                    self.ffManager.ForceField.getPressureCorrection(box)
             nAccept = 0
             for iStep in range(0, self.steps):
                 iParticle = np.random.randint(box.numParticles)
@@ -130,4 +134,13 @@ class Simulation(object):
                 if np.mod(iStep + 1, self.printXYZ) == 0:
                     self.boxManager.printXYZ(trajectory)
 
-        trajectory.close()
+            trajectory.close()
+
+        if self.method == "molecularDynamics":
+            box = self.boxManager.box
+
+            self.ffManager.getSystemForces(box)
+            self.integrator.updatePositions()
+            self.integrator.updateVelocities()
+            self.ffManager.getSystemForces(box)
+            self.integrator.updateVelocities()

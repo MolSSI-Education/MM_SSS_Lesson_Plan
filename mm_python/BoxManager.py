@@ -89,7 +89,7 @@ class BoxManager(object):
 
         """
 
-        sigma = np.sqrt(1.38e-23*temperature / self.box.mass)
+        sigma = np.sqrt(1.380648e-23 * temperature / self.box.mass)
         self.box.velocities = np.random.normal(loc = 0.0, scale = sigma, \
                 size = (self.box.numParticles,3))
 
@@ -98,7 +98,7 @@ class BoxManager(object):
         self.box.velocities = self.box.velocities \
             - momentum/(self.box.numParticles * self.box.mass)
 
-    def getConfigFromFile(self, restartFile):
+    def getConfigFromFile(self, restartFile, mass=0.0):
         """
 	Reads in a configuration in xyz format.
 
@@ -122,6 +122,9 @@ class BoxManager(object):
 	None
 
         """
+
+        mass = mass / 6.023e23 * 10**-3
+        self.box.mass = mass
 
         with open(restartFile, "r") as f:
             for lineNbr, line in enumerate(f):
@@ -167,4 +170,4 @@ class BoxManager(object):
            x = "{0:10.5f}".format(self.box.coordinates[iParticle][0])
            y = "{0:10.5f}".format(self.box.coordinates[iParticle][1])
            z = "{0:10.5f}".format(self.box.coordinates[iParticle][2])
-           trajectory.write("   ".join(["Ar",x,y,z,"\n"]))
+           trajectory.write("   ".join([index,x,y,z,"\n"]))

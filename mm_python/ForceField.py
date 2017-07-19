@@ -91,6 +91,7 @@ class LennardJones(ForceField):
         pairVirial = 24.0 * self.parms[1] * (2.0*sigByR12 - sigByR6)
 	return pairVirial
 
+
     def getTailCorrection(self, box):
 	"""
 	Computes the system tail correction due to energy cut off.            
