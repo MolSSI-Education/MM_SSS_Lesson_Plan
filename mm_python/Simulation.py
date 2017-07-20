@@ -3,7 +3,7 @@ import numpy as np
 
 class Simulation(object):
     """
-    Class containing the main driver for running an MC simulation
+    Class containing the main driver for running an MC and MD simulation
     of the Lennard Jones Fluid.
     """
     def __init__(self, method, temperature, steps, printProp, printXYZ,
@@ -15,23 +15,21 @@ class Simulation(object):
         Parameters
         ----------
 	method: string
-	Only supported value is "monteCarlo".
+	Supported value is "monteCarlo" or "molecularDynamics"
 
 	temperature: float
 	System temperature in K
 
 	steps: integer
-	Number of Monte Carlo steps
+	Number of Monte Carlo steps or number of Molecular Dynamics 
+        time steps
 
 	printProp: integer
-	Frequency of printing the thermodynamic properties of the system
-	(e.g. energy)
+	Frequency of printing the properties of the system
+	(e.g. energy or pressure)
 
 	printXYZ: integer
 	Frequency of printing the Cartesian coordinates of the system
-
-	maxDisp: float
-	Initial maximum displacement of the LJ spheres
 
 	ffManager: ForceFieldManager
         Force Field Manager instance associated to simulation force field
@@ -39,6 +37,16 @@ class Simulation(object):
         boxManager: BoxManager
         Box Manager instance associated to simulation box
 	
+	maxDisp: float
+	Initial maximum displacement of the LJ spheres. Only relevant
+        for Monte Carlo simulations.
+
+        integrator: Integrator
+        Integrator instance for performing Molecular Dynamics simulations.
+
+        scaleFreq: integer
+        Frequency at which atomic velocities will be rescaled to get consistency
+        with the target temperature. Relevant only for MD simulations. 
 
         Returns
         ----------
@@ -52,8 +60,8 @@ class Simulation(object):
         Notes
         ----------
         Output energy will be printed in reduced units.
-        Maximum displacement will be adjusted to achieve 40% acceptance rate.
-
+        Maximum displacement will be adjusted to achieve 40% acceptance rate
+        in MC simulations.
 
         """
 

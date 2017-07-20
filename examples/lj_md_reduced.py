@@ -30,7 +30,7 @@ myIntegrator = mmpy.VelocityVerlet(timeStep = 0.001, box = myBox)
 mySimulation = mmpy.Simulation(
     method="molecularDynamics",
     temperature=reducedTemperature,
-    steps=1000,
+    steps=10000,
     printProp=1,
     printXYZ=10,
     ffManager=myForceFieldManager,

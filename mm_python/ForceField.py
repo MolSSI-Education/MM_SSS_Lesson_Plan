@@ -2,8 +2,7 @@ import numpy as np
 
 class ForceField(object):
     """
-    Base class for Force Fields. The main attributes are the
-    potential parameters (parms)
+    Base class for Force Fields. The attributes are the
     type of the potential (e.g. LJ, Mie), energy cut off (cutoff)
     and the energy cut off squared (cutoff2)
     """
@@ -18,7 +17,7 @@ class LennardJones(ForceField):
     """
     Class for simple pairwise Lennard Jones potentials. This class is a 
     child of the base class ForceField. Two functions are defined: evaluate
-    and getTailCorrections. 
+    getPairVirial, and getTailCorrection and getPressureCorrection. 
     """
 
     def __init__(self, cutoff):

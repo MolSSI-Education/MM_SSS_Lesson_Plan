@@ -21,6 +21,9 @@ class BoxManager(object):
     	method : string
 	Method to insert particles. Values can be "random" or "lattice".
 
+        n : integer
+        Number of molecules to be inserted in the box.
+
 	Returns
     	----------
 	None
@@ -67,10 +70,14 @@ class BoxManager(object):
 
     def assignVelocities(self, temperature):
         """
+        This function assigns velocities to atoms according to the
+        Maxwell-Boltzmann distribution at a specified temperature.
+        It also removes momentum to avoid translational drifts.
 
 	Parameters
     	----------
-        None
+        temperature: float
+        The temperature of the velocity distribution.
 
 	Returns
     	----------
@@ -174,9 +181,30 @@ class BoxManager(object):
            trajectory.write("   ".join([index,x,y,z,"\n"]))
 
     def scaleVelocities(self, temperature):
+       """
+       Scales atoms velocities to make them consistent with the
+       system temperature.
 
-        self.box.velocities = self.box.velocities \
-                - self.box.velocities.mean(axis = 0)
-        K = 0.5 * np.sum(self.box.velocities * self.box.velocities)
-        factor = np.sqrt(1.5 * len(self.box.velocities) * temperature / K)
-        self.box.velocities = self.box.velocities * factor
+       Parameters
+       ----------
+       temperature: float
+
+       Returns
+       ----------
+       None
+
+       Raises
+       ----------
+       None
+
+       Notes
+       ----------
+       None
+
+       """
+
+       self.box.velocities = self.box.velocities \
+               - self.box.velocities.mean(axis = 0)
+       K = 0.5 * np.sum(self.box.velocities * self.box.velocities)
+       factor = np.sqrt(1.5 * len(self.box.velocities) * temperature / K)
+       self.box.velocities = self.box.velocities * factor
