@@ -1,0 +1,165 @@
+%\documentclass[12pt]{article}
+\documentclass[aip,jcp,preprint,superscriptaddress,floatfix]{revtex4-1}
+\usepackage{url,graphicx,tabularx,array,geometry,amsmath,listings}
+\setlength{\parskip}{2ex} %--skip lines between paragraphs
+\setlength{\parindent}{20pt} %--don't indent paragraphs
+
+\setlength{\headheight}{-50pt}
+\setlength{\textheight}{700pt}
+\setlength{\textwidth}{500pt}
+\setlength{\oddsidemargin}{-10pt}
+\setlength{\footskip}{50pt}
+\usepackage{graphicx}% Include figure files
+\usepackage{bm}
+\usepackage{hyperref}
+\graphicspath{{./Figures/}}
+
+%-- Commands for header
+\renewcommand{\title}[1]{\textbf{\large{#1}}\\}
+\renewcommand{\line}{\begin{tabularx}{\textwidth}{X>{\raggedleft}X}\hline\\\end{tabularx}\\[-0.5cm]}
+\newcommand{\leftright}[2]{\begin{tabularx}{\textwidth}{X>{\raggedleft}X}#1%
+& #2\\\end{tabularx}\\[-1cm]}
+
+%\linespread{2} %-- Uncomment for Double Space
+\begin{document}
+
+\title{\center{Molecular Dynamics} }
+\rule{\textwidth}{1pt}
+\leftright{The Molecular Sciences Software Institute}{Eliseo Marin-Rimoldi} %-- left and right positions in the header
+
+\bigskip
+
+\section{Introduction}
+
+Your first assignment consisted on implementing a Monte Carlo (MC) simulation
+for the Lennard-Jones (LJ) particle in the canonical ensemble. 
+As part of this task,
+you developed code that computed pair-wise energies and forces for this model, 
+as well as functions that computed interaction energies between molecules,
+the total system energy and the system virial.
+
+The objective of the new task is to extend your code by including the
+necessary functionality to simulate the NVE ensemble of configurations 
+of the LJ model using the Molecular Dynamics (MD). You will be 
+assigned to work in teams to develop this project. The team will
+decide how is best to design the new code: what is the shared functionality
+between the two methods? how does the library should look like? How can
+we improve reusability and extensibility? what data
+structures should be used? What are the unit tests 
+that might be used? The primary learning goal of this activity 
+is to think about interoperability and teamwork.
+
+In the following sections, the relevant equations of the MD 
+method will be presented and reference data for validation will be provided.
+
+\subsection{Molecular Dynamics method}
+
+A very common technique to simulate equilibrium and nonequilibrium
+properties is the Molecular Dynamics method. 
+The objective of this method is to simulate the evolution of a model over time
+by integrating the Newtonian equations of motion to 
+extract dynamic and thermodynamic properties. Thermodynamic
+averages should be identical to those obtained by MC sampling
+due to the ergodic hypothesis, given that we use the same model at the
+same conditions. In an MD simulation, we can get additional dynamical
+properties that is inaccessible in an MC simulation, such diffusivities or 
+viscosities. 
+
+Given a conservative system (i.e. the Hamiltonian does not depend on time), 
+we can write the Newtonian equations of motion in Cartesian coordinates
+from Hamilton's
+equations as
+
+\begin{equation}
+	\ddot{\mathbf{r}} = \frac{\mathbf{f}_i\left( \mathbf{r} \right) }{\textit{m}_i}
+\end{equation}
+
+Where $\mathbf{r}$ is the vector of Cartesian coordinates, $\mathbf{f}_i$ and
+ $\textit{m}_i$ are the forces and the mass of each atom, respectively.
+These are 3N second order differential equations, where N is the number 
+of atoms in the system. There are various finite difference approaches to solve
+such equations. The basic idea in all of them is to move 
+across time using finite time steps $\delta t$ and thus generate new atomic
+positions. A good integration scheme is one that conserves energy 
+and momentum, minimizes force evaluations, is stable and accurate. 
+
+\section{Velocity Verlet Algorithm}
+
+One particularly good and widely used method is the Velocity Verlet algorithm
+which is an improvement on the original Verlet method (i.e. less memory
+intensive). The equations of this method are
+
+\begin{equation}
+	r \left( t + \delta t \right) = r \left( t \right) + v \left( t \right) \delta t + \frac{f \left(t \right) }{2 m} \delta t ^2
+\label{eq:verlet.position.update}
+\end{equation}
+
+\begin{equation}
+	v \left( t + \delta t \right) = v \left( t \right) + \frac{f \left( t + \delta t \right) + f \left(t \right) }{2m} \delta t
+\end{equation}
+
+This algorithm can be implemented as follows
+
+\begin{itemize}
+	\item Given a system state (i.e. positions and velocities), 
+		compute forces on each atom
+	\item Update the positions using Equation \ref{eq:verlet.position.update}
+	\item Do a partial update to the velocities using the current forces
+		\begin{equation}
+			v \leftarrow v + \frac{f}{2m} \delta t
+		\end{equation}
+	\item Compute new forces using the updated positions
+	\item Complete the update of the velocities with the old forces
+		\begin{equation}
+			v \leftarrow v + \frac{f}{2m} \delta t
+		\end{equation}
+
+\end{itemize}
+
+\subsection{Technical considerations}
+
+\textbf{Energy conservation. } The velocity verlet algorithm has very good
+energy conservation properties. It is always a good check to see if 
+there is no drift in energy during the course of the simulation.
+
+\textbf{Time step. } Using too large of a time step will result in an unstable
+system, with energy increasing in time. 
+
+\textbf{Initial positions. } It is possible to use a crystaline 
+lattice as an initial
+configuration. You could also place atoms randomly, but this might be
+dangerous as core overlaps might exist, leading to huge repulsion forces. In
+this case, you could first relax the system using the translation moves
+of your MC code, which only use energy differences forces for sampling. 
+Finally, you could use an old initial configuration 
+generated from your MC code.
+
+\textbf{Initial velocities. } The initial velocities are usually obtained
+using the Maxwell-Boltzmann distribution at the desired temperature
+
+\begin{equation}
+	\rho \left(\mathbf{v}_i\right) = \left( \frac{m_i}{2 \pi k_B T} \right) ^ {1/2} exp \left( - \frac{m_i \mathbf{v}_i^2 } {2 k_B T }  \right)
+\end{equation}
+
+Note that this is a Gaussian distribution with zero mean and variance
+
+\begin{equation}
+	\sigma_v^2 = \frac{k_B T}{m_i}
+\end{equation}
+
+Once the velocities are assigned to the atoms, we must set the system momentum
+to zero to avoid any translational drift. We do this by 
+
+\begin{itemize}
+	\item Find the net momentum of the system $\mathbf{P} = \sum m_i \mathbf{v}_i$
+	\item Reassign initial atomic velocities as
+		\begin{equation}
+			\mathbf{v}_i \leftarrow \mathbf{v}_i - \frac{\mathbf{P}} { N m_i}
+		\end{equation}
+\end{itemize}
+
+\textbf{Periodic boundary conditions, minimum image distance, 
+energy truncation and tail correction. } Your MD code should also implement 
+these features.
+
+\end{document}
