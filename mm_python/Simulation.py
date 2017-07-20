@@ -8,7 +8,7 @@ class Simulation(object):
     """
     def __init__(self, method, temperature, steps, printProp, printXYZ,
             ffManager, boxManager, maxDisp = 0.0, 
-            integrator = None):
+            integrator = None, scaleFreq = 0):
         """
         Constructor of a simulation object.
  
@@ -68,6 +68,7 @@ class Simulation(object):
         self.boxManager = boxManager
         self.beta = 1.0 / (self.temperature)
         self.integrator = integrator
+        self.scaleFreq = scaleFreq
 
     def run(self):
         """
@@ -78,7 +79,8 @@ class Simulation(object):
             trajectory = open('trajectory.xyz', 'w')
             self.boxManager.printXYZ(trajectory)
             box = self.boxManager.box
-            totalPairEnergy = self.ffManager.getTotalPairEnergy(box)
+            totalPairEnergy, totalPairVirial = \
+                    self.ffManager.getTotalPairEnergyAndVirial(box)
             tailCorrection = self.ffManager.ForceField.getTailCorrection(box)
             pressureCorrection = \
                     self.ffManager.ForceField.getPressureCorrection(box)
@@ -89,13 +91,17 @@ class Simulation(object):
                         * self.maxDisp
 
                 oldPosition = box.coordinates[iParticle].copy()
-                oldEnergy = self.ffManager.getMolEnergy(iParticle,box)
+                oldEnergy, oldVirial = \
+                        self.ffManager.getMolPairEnergyAndVirial(iParticle,box)
+
                 box.coordinates[iParticle] += randomDisplacement
                 box.coordinates[iParticle] = \
                     box.coordinates[iParticle] - box.length * \
                     np.round(box.coordinates[iParticle]/box.length)
 
-                newEnergy = self.ffManager.getMolEnergy(iParticle, box)
+                newEnergy, newVirial = \
+                        self.ffManager.getMolPairEnergyAndVirial(iParticle, box)
+
                 dE = newEnergy - oldEnergy
                 accept = False
                 if dE <= 0.0:
@@ -109,6 +115,7 @@ class Simulation(object):
                 if accept:
                     nAccept = nAccept + 1
                     totalPairEnergy = totalPairEnergy + dE
+                    totalPairVirial = totalPairVirial + (newVirial - oldVirial)
                 else:
                     box.coordinates[iParticle] = oldPosition.copy()
 
@@ -118,7 +125,8 @@ class Simulation(object):
                             (totalPairEnergy + tailCorrection)/ \
                             (self.ffManager.ForceField.parms[1]* \
                             box.numParticles)
-                    pressure = self.ffManager.getSystemVirial(box)
+                    #pressure = self.ffManager.getSystemVirial(box)
+                    pressure = totalPairVirial
                     pressure += 3.0*box.numParticles/self.beta
                     pressure /= 3.0*np.power(box.length,3)
                     pressure += pressureCorrection
@@ -137,10 +145,41 @@ class Simulation(object):
             trajectory.close()
 
         if self.method == "molecularDynamics":
+
             box = self.boxManager.box
 
-            self.ffManager.getSystemForces(box)
-            self.integrator.updatePositions()
-            self.integrator.updateVelocities()
-            self.ffManager.getSystemForces(box)
-            self.integrator.updateVelocities()
+            trajectory = open('trajectory.xyz', 'w')
+            self.boxManager.printXYZ(trajectory)
+
+            tailCorrection = self.ffManager.ForceField.getTailCorrection(box)
+            pressureCorrection = \
+                    self.ffManager.ForceField.getPressureCorrection(box)
+
+            totalPairEnergy, totalPairVirial = \
+                    self.ffManager.getTotalPairEnergyAndVirial(box, \
+                    populateForces = True)
+
+	    totalEnergy = \
+	            (totalPairEnergy + tailCorrection)/ \
+	            (self.ffManager.ForceField.parms[1]* \
+	            box.numParticles)
+
+            for iStep in range(0,self.steps):
+
+                self.integrator.updatePositions()
+                self.integrator.updateVelocities()
+                pairEnergy, pairVirial = \
+                        self.ffManager.getTotalPairEnergyAndVirial(box, \
+                        populateForces = True)
+                self.integrator.updateVelocities()
+
+                if np.mod(iStep + 1, self.scaleFreq) == 0:
+                    self.boxManager.scaleVelocities(self.temperature)
+
+                if np.mod(iStep + 1, self.printProp) == 0:
+                    print pairEnergy
+
+                if np.mod(iStep + 1, self.printXYZ) == 0:
+                    self.boxManager.printXYZ(trajectory)
+
+            trajectory.close()

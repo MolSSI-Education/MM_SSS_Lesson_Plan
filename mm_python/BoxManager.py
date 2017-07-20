@@ -1,4 +1,5 @@
 import numpy as np
+import math
 
 class BoxManager(object):
     """
@@ -36,17 +37,15 @@ class BoxManager(object):
 
         """
 
-        mass = mass / 6.023e23 * 10**-3
+        self.box.mass = mass / 6.023e23 * 10.0**-3
         self.box.numParticles = n 
 
         if method == "random":
             self.box.coordinates = (0.5 - np.random.rand(n,3)) * self.box.length
-            self.box.mass = mass 
 
         elif method == "lattice":
             nSide = 1
             self.box.coordinates = np.zeros((n,3))
-            self.box.mass = mass 
             while np.power(nSide, 3) < n:
                 nSide += 1
             counterPosition = np.zeros((3, ))
@@ -89,9 +88,12 @@ class BoxManager(object):
 
         """
 
-        sigma = np.sqrt(1.380648e-23 * temperature / self.box.mass)
-        self.box.velocities = np.random.normal(loc = 0.0, scale = sigma, \
-                size = (self.box.numParticles,3))
+#        sigma = np.sqrt(1.380648e-23 * temperature / self.box.mass)
+#        self.box.velocities = np.random.normal(loc = 0.0, scale = sigma, \
+#                size = (self.box.numParticles,3))
+#
+
+        self.box.velocities = np.random.rand(self.box.numParticles, 3)
 
         momentum = np.sum(self.box.mass * self.box.velocities, axis = 0)
 
@@ -123,8 +125,7 @@ class BoxManager(object):
 
         """
 
-        mass = mass / 6.023e23 * 10**-3
-        self.box.mass = mass
+        self.box.mass = mass / 6.023e23 * 10.0**-3
 
         with open(restartFile, "r") as f:
             for lineNbr, line in enumerate(f):
@@ -167,7 +168,15 @@ class BoxManager(object):
        trajectory.write(str(self.box.numParticles)+"\n\n")
        for iParticle in range(0,self.box.numParticles):
            index = "{0:4d}".format(iParticle+1)
-           x = "{0:10.5f}".format(self.box.coordinates[iParticle][0])
-           y = "{0:10.5f}".format(self.box.coordinates[iParticle][1])
-           z = "{0:10.5f}".format(self.box.coordinates[iParticle][2])
+           x = "{0:20.15f}".format(self.box.coordinates[iParticle][0])
+           y = "{0:20.15f}".format(self.box.coordinates[iParticle][1])
+           z = "{0:20.15f}".format(self.box.coordinates[iParticle][2])
            trajectory.write("   ".join([index,x,y,z,"\n"]))
+
+    def scaleVelocities(self, temperature):
+
+        self.box.velocities = self.box.velocities \
+                - self.box.velocities.mean(axis = 0)
+        K = 0.5 * np.sum(self.box.velocities * self.box.velocities)
+        factor = np.sqrt(1.5 * len(self.box.velocities) * temperature / K)
+        self.box.velocities = self.box.velocities * factor
