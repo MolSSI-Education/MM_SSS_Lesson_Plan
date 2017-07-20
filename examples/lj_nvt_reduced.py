@@ -9,33 +9,26 @@ reducedTemperature = 0.9
 reducedDensity = 0.9
 numParticles = 100
 
-sigma = 3.73
-epsilon = 148.0
 
-realTemperature = epsilon * reducedTemperature
+boxLength = np.power(numParticles/reducedDensity,0.333)
 
-boxLength = reducedDensity / np.power(sigma, 3)
-boxLength = np.power(numParticles / boxLength, 0.333)
-
-print 'Box Length' , boxLength
+print boxLength
 
 myBox = mmpy.Box(length=boxLength)
 myBoxManager = mmpy.BoxManager(myBox)
 myBoxManager.addParticles(n=numParticles, method="lattice")
-#myBoxManager.getConfigFromFile(restartFile = "initial.xyz")
 
-myForceField = mmpy.LennardJones(
-    parms=(sigma, epsilon), cutoff= 0.5 * boxLength)
+myForceField = mmpy.LennardJones(cutoff= 0.5 * boxLength)
 
 myForceFieldManager = mmpy.ForceFieldManager(myForceField)
 
 mySimulation = mmpy.Simulation(
     method="monteCarlo",
-    temperature=realTemperature,
+    temperature=reducedTemperature,
     steps=50000,
     printProp=1000,
     printXYZ=1000,
-    maxDisp=0.1*sigma,
+    maxDisp=0.1,
     ffManager=myForceFieldManager,
     boxManager=myBoxManager)
 
