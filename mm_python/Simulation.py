@@ -121,17 +121,13 @@ class Simulation(object):
 
                 if np.mod(iStep + 1, self.printProp) == 0:
                     accRate = float(nAccept)/(float(iStep)+1) * 100
-                    totalEnergy = \
-                            (totalPairEnergy + tailCorrection)/ \
-                            (self.ffManager.ForceField.parms[1]* \
-                            box.numParticles)
-                    #pressure = self.ffManager.getSystemVirial(box)
                     pressure = totalPairVirial
                     pressure += 3.0*box.numParticles/self.beta
                     pressure /= 3.0*np.power(box.length,3)
                     pressure += pressureCorrection
-                    pressure *= np.power(self.ffManager.ForceField.parms[0],3) \
-                            / self.ffManager.ForceField.parms[1] 
+
+                    totalEnergy = (totalPairEnergy + tailCorrection) \
+                            / box.numParticles
                     print(iStep+1, totalEnergy, pressure, accRate, self.maxDisp)
 
                     if accRate < 38.0:
