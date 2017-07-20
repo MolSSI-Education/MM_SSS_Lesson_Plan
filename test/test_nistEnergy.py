@@ -18,9 +18,9 @@ def test_nistEnergy():
     myForceField = mmpy.LennardJones(parms = params, cutoff = rCut)
     ffManager = mmpy.ForceFieldManager(myForceField)
 
-    totalEnergy = ffManager.getTotalEnergy(myBox)
+    totalPairEnergy, wPair = ffManager.getTotalPairEnergyAndVirial(myBox)
     correctionEnergy = myForceField.getTailCorrection(myBox)
 
-    bench_energy = (totalEnergy/params[1], correctionEnergy/params[1])
+    bench_energy = (totalPairEnergy/params[1], correctionEnergy/params[1])
     assert np.allclose(answer, bench_energy)
 

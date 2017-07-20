@@ -18,6 +18,6 @@ def test_force():
     bench_force *= 24.0 * params[1] / rij
     
     rij2 = np.power(rij,2)
-    force = lj_ff.getPairVirial(rij2)/rij
+    force = lj_ff.getPairVirial(rij2) / rij
     
     assert np.allclose(force, bench_force)
