@@ -157,8 +157,7 @@ class Simulation(object):
 
 	    totalEnergy = \
 	            (totalPairEnergy + tailCorrection)/ \
-	            (self.ffManager.ForceField.parms[1]* \
-	            box.numParticles)
+	            box.numParticles
 
             for iStep in range(0,self.steps):
 
@@ -173,7 +172,9 @@ class Simulation(object):
                     self.boxManager.scaleVelocities(self.temperature)
 
                 if np.mod(iStep + 1, self.printProp) == 0:
-                    print pairEnergy
+                    totalEnergy = (pairEnergy + tailCorrection) \
+                            / box.numParticles
+                    print totalEnergy
 
                 if np.mod(iStep + 1, self.printXYZ) == 0:
                     self.boxManager.printXYZ(trajectory)

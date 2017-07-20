@@ -39,17 +39,23 @@ class VelocityVerlet(Integrators):
 
         """
 
+        #print self.box.coordinates
+        #raw_input()
+        #print self.box.forces
+        #raw_input()
         self.box.coordinates = self.box.coordinates \
-                + self.box.velocities * self.timeStep * 10.0**10 \
-                + 0.5 * self.box.forces * 1.380648e-23 * self.timeStep \
-                * self.timeStep * 10.0**20\
-                / self.box.mass
+                + self.box.velocities * self.timeStep \
+                + 0.5 * self.box.forces * self.timeStep \
+                * self.timeStep #/ self.box.mass
 
+        #print self.box.coordinates
+        #raw_input()
+        #print self.box.forces
+        #raw_input()
         self.box.coordinates = self.box.coordinates - self.box.length * \
                 np.round(self.box.coordinates / self.box.length)
 
     def updateVelocities(self):
 
         self.box.velocities = self.box.velocities \
-     		+ 0.5 * self.box.forces * 1.380648e-23 * self.timeStep \
-                * 10.0**10 / self.box.mass  
+     		+ 0.5 * self.box.forces * self.timeStep #/ self.box.mass  
