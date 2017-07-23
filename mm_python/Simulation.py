@@ -7,11 +7,11 @@ class Simulation(object):
     of the Lennard Jones Fluid.
     """
     def __init__(self, method, temperature, steps, printProp, printXYZ,
-            ffManager, boxManager, maxDisp = 0.0, 
+            ffManager, boxManager, maxDisp = 0.0,
             integrator = None, scaleFreq = 0):
         """
         Constructor of a simulation object.
- 
+
         Parameters
         ----------
 	method: string
@@ -21,7 +21,7 @@ class Simulation(object):
 	System temperature in K
 
 	steps: integer
-	Number of Monte Carlo steps or number of Molecular Dynamics 
+	Number of Monte Carlo steps or number of Molecular Dynamics
         time steps
 
 	printProp: integer
@@ -36,7 +36,7 @@ class Simulation(object):
 
         boxManager: BoxManager
         Box Manager instance associated to simulation box
-	
+
 	maxDisp: float
 	Initial maximum displacement of the LJ spheres. Only relevant
         for Monte Carlo simulations.
@@ -46,7 +46,7 @@ class Simulation(object):
 
         scaleFreq: integer
         Frequency at which atomic velocities will be rescaled to get consistency
-        with the target temperature. Relevant only for MD simulations. 
+        with the target temperature. Relevant only for MD simulations.
 
         Returns
         ----------
@@ -182,7 +182,7 @@ class Simulation(object):
                 if np.mod(iStep + 1, self.printProp) == 0:
                     totalEnergy = (pairEnergy + tailCorrection) \
                             / box.numParticles
-                    print totalEnergy
+                    print(totalEnergy)
 
                 if np.mod(iStep + 1, self.printXYZ) == 0:
                     self.boxManager.printXYZ(trajectory)

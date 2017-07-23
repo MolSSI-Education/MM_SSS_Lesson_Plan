@@ -5,7 +5,7 @@ class BoxManager(object):
     """
     Class to perform actions on a given box. The main attribute of this
     class is self.box, which represents the box on which actions will
-    be performed. 
+    be performed.
     """
     def __init__(self, box):
         self.box = box
@@ -14,7 +14,7 @@ class BoxManager(object):
         """
         Adds n particles to the simulation box using two methods: random
         and lattice. The first one inserts particles randomly. The second
-        inserts them in a lattice. 
+        inserts them in a lattice.
 
 	Parameters
     	----------
@@ -41,7 +41,7 @@ class BoxManager(object):
         """
 
         self.box.mass = mass / 6.023e23 * 10.0**-3
-        self.box.numParticles = n 
+        self.box.numParticles = n
 
         if method == "random":
             self.box.coordinates = (0.5 - np.random.rand(n,3)) * self.box.length
@@ -55,7 +55,7 @@ class BoxManager(object):
             for iParticle in range(0, n):
                 self.box.coordinates[iParticle] = \
                     (counterPosition + 0.5)*self.box.length / nSide \
-                    - 0.5*self.box.length 
+                    - 0.5*self.box.length
                 counterPosition[0] += 1
                 if counterPosition[0] == nSide:
                     counterPosition[0] = 0
