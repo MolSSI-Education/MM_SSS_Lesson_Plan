@@ -3,7 +3,7 @@
 #from .ForceFieldManager import ForceFieldManager
 #from .BoxManager import BoxManager, Box
 import numpy as np
-import mm_python as mmpy 
+import mm_python as mmpy
 
 reducedTemperature = 0.9
 reducedDensity = 0.9
@@ -12,7 +12,7 @@ numParticles = 100
 
 boxLength = np.power(numParticles/reducedDensity,0.333)
 
-print boxLength
+print(boxLength)
 
 myBox = mmpy.Box(length=boxLength)
 myBoxManager = mmpy.BoxManager(myBox)

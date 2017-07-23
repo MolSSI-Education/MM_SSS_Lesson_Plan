@@ -78,4 +78,4 @@ class VelocityVerlet(Integrators):
         """
 
         self.box.velocities = self.box.velocities \
-     		+ 0.5 * self.box.forces * self.timeStep 
+                + 0.5 * self.box.forces * self.timeStep 

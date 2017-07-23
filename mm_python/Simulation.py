@@ -7,38 +7,38 @@ class Simulation(object):
     of the Lennard Jones Fluid.
     """
     def __init__(self, method, temperature, steps, printProp, printXYZ,
-            ffManager, boxManager, maxDisp = 0.0, 
+            ffManager, boxManager, maxDisp = 0.0,
             integrator = None, scaleFreq = 0):
         """
         Constructor of a simulation object.
- 
+
         Parameters
         ----------
-	method: string
-	Supported value is "monteCarlo" or "molecularDynamics"
+        method: string
+        Supported value is "monteCarlo" or "molecularDynamics"
 
-	temperature: float
-	System temperature in K
+        temperature: float
+        System temperature in K
 
-	steps: integer
-	Number of Monte Carlo steps or number of Molecular Dynamics 
+        steps: integer
+        Number of Monte Carlo steps or number of Molecular Dynamics
         time steps
 
-	printProp: integer
-	Frequency of printing the properties of the system
-	(e.g. energy or pressure)
+        printProp: integer
+        Frequency of printing the properties of the system
+        (e.g. energy or pressure)
 
-	printXYZ: integer
-	Frequency of printing the Cartesian coordinates of the system
+        printXYZ: integer
+        Frequency of printing the Cartesian coordinates of the system
 
-	ffManager: ForceFieldManager
+        ffManager: ForceFieldManager
         Force Field Manager instance associated to simulation force field
 
         boxManager: BoxManager
         Box Manager instance associated to simulation box
-	
-	maxDisp: float
-	Initial maximum displacement of the LJ spheres. Only relevant
+
+        maxDisp: float
+        Initial maximum displacement of the LJ spheres. Only relevant
         for Monte Carlo simulations.
 
         integrator: Integrator
@@ -46,7 +46,7 @@ class Simulation(object):
 
         scaleFreq: integer
         Frequency at which atomic velocities will be rescaled to get consistency
-        with the target temperature. Relevant only for MD simulations. 
+        with the target temperature. Relevant only for MD simulations.
 
         Returns
         ----------
@@ -163,9 +163,9 @@ class Simulation(object):
                     self.ffManager.getTotalPairEnergyAndVirial(box, \
                     populateForces = True)
 
-	    totalEnergy = \
-	            (totalPairEnergy + tailCorrection)/ \
-	            box.numParticles
+            totalEnergy = \
+                    (totalPairEnergy + tailCorrection)/ \
+                    box.numParticles
 
             for iStep in range(0,self.steps):
 
@@ -182,7 +182,7 @@ class Simulation(object):
                 if np.mod(iStep + 1, self.printProp) == 0:
                     totalEnergy = (pairEnergy + tailCorrection) \
                             / box.numParticles
-                    print totalEnergy
+                    print(totalEnergy)
 
                 if np.mod(iStep + 1, self.printXYZ) == 0:
                     self.boxManager.printXYZ(trajectory)
