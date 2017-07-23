@@ -47,27 +47,42 @@ class BoxManager(object):
             self.box.coordinates = (0.5 - np.random.rand(n,3)) * self.box.length
 
         elif method == "lattice":
-            nSide = 1
-            self.box.coordinates = np.zeros((n,3))
-            while np.power(nSide, 3) < n:
-                nSide += 1
-            counterPosition = np.zeros((3, ))
-            for iParticle in range(0, n):
-                self.box.coordinates[iParticle] = \
-                    (counterPosition + 0.5)*self.box.length / nSide \
-                    - 0.5*self.box.length 
-                counterPosition[0] += 1
-                if counterPosition[0] == nSide:
-                    counterPosition[0] = 0
-                    counterPosition[1] += 1
-                    if counterPosition[1] == nSide:
-                        counterPosition[1] = 0
-                        counterPosition[2] += 1
+        #    nSide = 1
+        #    self.box.coordinates = np.zeros((n,3))
+        #    while np.power(nSide, 3) < n:
+        #        nSide += 1
+        #    counterPosition = np.zeros((3, ))
+        #    for iParticle in range(0, n):
+        #        self.box.coordinates[iParticle] = \
+        #            (counterPosition + 0.5)*self.box.length / nSide \
+        #            - 0.5*self.box.length 
+        #        counterPosition[0] += 1
+        #        if counterPosition[0] == nSide:
+        #            counterPosition[0] = 0
+        #            counterPosition[1] += 1
+        #            if counterPosition[1] == nSide:
+        #                counterPosition[1] = 0
+        #                counterPosition[2] += 1
 
-            for iParticle in range(0, self.box.numParticles):
-                self.box.coordinates[iParticle] -= 0.5
+        #    for iParticle in range(0, self.box.numParticles):
+        #        self.box.coordinates[iParticle] -= 0.5
 
 
+    	    xVector = np.linspace(0.0,self.box.length,np.cbrt(self.box.numParticles) + 1)
+	    yVector = np.linspace(0.0,self.box.length,np.cbrt(self.box.numParticles) + 1)
+	    zVector = np.linspace(0.0,self.box.length,np.cbrt(self.box.numParticles) + 1)
+	    self.box.coordinates = np.vstack(np.meshgrid(xVector,yVector,zVector)).reshape(3,-1).T
+
+            excess = len(self.box.coordinates) - self.box.numParticles
+
+            self.box.coordinates = self.box.coordinates[:-excess]
+
+            self.box.coordinates *= 0.98
+
+           # print self.box.coordinates
+
+            #raw_input()
+#
     def assignVelocities(self, temperature):
         """
         This function assigns velocities to atoms according to the
