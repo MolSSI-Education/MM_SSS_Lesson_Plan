@@ -16,8 +16,8 @@ print('Box Length' , boxLength)
 myBox = mmpy.Box(length=boxLength)
 myBoxManager = mmpy.BoxManager(myBox)
 
-#myBoxManager.getConfigFromFile(restartFile = "initial.md.xyz", mass = 39.0)
-myBoxManager.addParticles(n = numParticles, method = "lattice", mass = 39.0)
+myBoxManager.getConfigFromFile(restartFile = "initial.md.xyz", mass = 39.0)
+#myBoxManager.addParticles(n = numParticles, method = "lattice", mass = 39.0)
 
 myBoxManager.assignVelocities(reducedTemperature)
 
