@@ -26,17 +26,17 @@ class LennardJones(ForceField):
     def evaluate(self, rij2):
         """
         Computes the interaction energy between two particles using
-	the Lennard Jones potential.
+        the Lennard Jones potential.
             
         Parameters
         ----------
-	rij2: float
-	Distance between two particles
+        rij2: float
+        Distance between two particles
 
         Returns
         ----------
         energy: float
-	Interaction energy between two particles
+        Interaction energy between two particles
 
         Raises
         ----------
@@ -60,8 +60,8 @@ class LennardJones(ForceField):
             
         Parameters
         ----------
-	rij2: float
-	Distance between two particles
+        rij2: float
+        Distance between two particles
 
         Returns
         ----------
@@ -79,26 +79,26 @@ class LennardJones(ForceField):
 
         """
 
-	sigByR2 =  1 / rij2
+        sigByR2 =  1 / rij2
         sigByR6 = np.power(sigByR2,3)
         sigByR12 = np.power(sigByR6,2)
         pairVirial = 24.0 * (2.0*sigByR12 - sigByR6)
-	return pairVirial
+        return pairVirial
 
 
     def getTailCorrection(self, box):
-	"""
-	Computes the system tail correction due to energy cut off.            
+        """
+        Computes the system tail correction due to energy cut off.            
  
         Parameters
         ----------
-	box: box
-	Box for which the tail correction will be computed. 
+        box: box
+        Box for which the tail correction will be computed. 
 
         Returns
         ----------
-	eCorrection: float
-	The computed tail correction.
+        eCorrection: float
+        The computed tail correction.
 
         Raises
         ----------
@@ -121,18 +121,18 @@ class LennardJones(ForceField):
 
     def getPressureCorrection(self, box):
 
-	"""
-	Computes the pressure correction due to cut off.            
+        """
+        Computes the pressure correction due to cut off.            
  
         Parameters
         ----------
-	box: box
-	Box for which the tail correction will be computed. 
+        box: box
+        Box for which the tail correction will be computed. 
 
         Returns
         ----------
-	pCorrection: float
-	The computed pressure tail correction.
+        pCorrection: float
+        The computed pressure tail correction.
 
         Raises
         ----------

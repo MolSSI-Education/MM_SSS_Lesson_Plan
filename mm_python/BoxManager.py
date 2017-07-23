@@ -16,27 +16,27 @@ class BoxManager(object):
         and lattice. The first one inserts particles randomly. The second
         inserts them in a lattice.
 
-	Parameters
-    	----------
-    	method : string
-	Method to insert particles. Values can be "random" or "lattice".
+        Parameters
+        ----------
+        method : string
+        Method to insert particles. Values can be "random" or "lattice".
 
         n : integer
         Number of molecules to be inserted in the box.
 
-	Returns
-    	----------
-	None
+        Returns
+        ----------
+        None
 
 
-	Raises
-    	----------
-	None
+        Raises
+        ----------
+        None
 
 
-	Notes
-    	----------
-	None
+        Notes
+        ----------
+        None
 
         """
 
@@ -74,24 +74,24 @@ class BoxManager(object):
         Maxwell-Boltzmann distribution at a specified temperature.
         It also removes momentum to avoid translational drifts.
 
-	Parameters
-    	----------
+        Parameters
+        ----------
         temperature: float
         The temperature of the velocity distribution.
 
-	Returns
-    	----------
-	None
+        Returns
+        ----------
+        None
 
 
-	Raises
-    	----------
-	None
+        Raises
+        ----------
+        None
 
 
-	Notes
-    	----------
-	None
+        Notes
+        ----------
+        None
 
         """
 
@@ -109,26 +109,26 @@ class BoxManager(object):
 
     def getConfigFromFile(self, restartFile, mass=0.0):
         """
-	Reads in a configuration in xyz format.
+        Reads in a configuration in xyz format.
 
-	Parameters
-    	----------
-    	restartFile: string
-	Location of the xyz file containing the configuration
+        Parameters
+        ----------
+        restartFile: string
+        Location of the xyz file containing the configuration
 
-	Returns
-    	----------
-	None
-
-
-	Raises
-    	----------
-	None
+        Returns
+        ----------
+        None
 
 
-	Notes
-    	----------
-	None
+        Raises
+        ----------
+        None
+
+
+        Notes
+        ----------
+        None
 
         """
 

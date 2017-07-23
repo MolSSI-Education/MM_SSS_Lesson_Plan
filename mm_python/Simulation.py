@@ -14,31 +14,31 @@ class Simulation(object):
 
         Parameters
         ----------
-	method: string
-	Supported value is "monteCarlo" or "molecularDynamics"
+        method: string
+        Supported value is "monteCarlo" or "molecularDynamics"
 
-	temperature: float
-	System temperature in K
+        temperature: float
+        System temperature in K
 
-	steps: integer
-	Number of Monte Carlo steps or number of Molecular Dynamics
+        steps: integer
+        Number of Monte Carlo steps or number of Molecular Dynamics
         time steps
 
-	printProp: integer
-	Frequency of printing the properties of the system
-	(e.g. energy or pressure)
+        printProp: integer
+        Frequency of printing the properties of the system
+        (e.g. energy or pressure)
 
-	printXYZ: integer
-	Frequency of printing the Cartesian coordinates of the system
+        printXYZ: integer
+        Frequency of printing the Cartesian coordinates of the system
 
-	ffManager: ForceFieldManager
+        ffManager: ForceFieldManager
         Force Field Manager instance associated to simulation force field
 
         boxManager: BoxManager
         Box Manager instance associated to simulation box
 
-	maxDisp: float
-	Initial maximum displacement of the LJ spheres. Only relevant
+        maxDisp: float
+        Initial maximum displacement of the LJ spheres. Only relevant
         for Monte Carlo simulations.
 
         integrator: Integrator
@@ -163,9 +163,9 @@ class Simulation(object):
                     self.ffManager.getTotalPairEnergyAndVirial(box, \
                     populateForces = True)
 
-	    totalEnergy = \
-	            (totalPairEnergy + tailCorrection)/ \
-	            box.numParticles
+            totalEnergy = \
+                    (totalPairEnergy + tailCorrection)/ \
+                    box.numParticles
 
             for iStep in range(0,self.steps):
 
