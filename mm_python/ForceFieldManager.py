@@ -7,20 +7,20 @@ class ForceFieldManager(object):
 
     def getMolPairEnergyAndVirial(self, iParticle, box, populateForces = False):
         """
-	Computes the inter-molecular energy and virial of a particle.
+        Computes the inter-molecular energy and virial of a particle.
 
         Parameters
         ----------
-	iParticle: integer
-	Index of the particle
+        iParticle: integer
+        Index of the particle
 
-	box: box
-	The box containing the particles.
+        box: box
+        The box containing the particles.
 
         Returns
         ----------
         eTotal: float
-	Total inter-molecular energy of a molecule.
+        Total inter-molecular energy of a molecule.
 
         wTotal: float
         Total pair virial of a molecule.
@@ -59,20 +59,20 @@ class ForceFieldManager(object):
 
     def getTotalPairEnergyAndVirial(self, box, populateForces = False):
         """
-	Computes the inter-molecular energy of a box.
+        Computes the inter-molecular energy of a box.
 
         Parameters
         ----------
-	box: box
-	The box containing the particles.
+        box: box
+        The box containing the particles.
 
         Returns
         ----------
         ePair: float
-	Total inter-molecular energy of box.
+        Total inter-molecular energy of box.
 
         wPair: float
-	Total virial of box.
+        Total virial of box.
 
         Raises
         ----------

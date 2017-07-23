@@ -5,7 +5,7 @@ class BoxManager(object):
     """
     Class to perform actions on a given box. The main attribute of this
     class is self.box, which represents the box on which actions will
-    be performed. 
+    be performed.
     """
     def __init__(self, box):
         self.box = box
@@ -14,84 +14,99 @@ class BoxManager(object):
         """
         Adds n particles to the simulation box using two methods: random
         and lattice. The first one inserts particles randomly. The second
-        inserts them in a lattice. 
+        inserts them in a lattice.
 
-	Parameters
-    	----------
-    	method : string
-	Method to insert particles. Values can be "random" or "lattice".
+        Parameters
+        ----------
+        method : string
+        Method to insert particles. Values can be "random" or "lattice".
 
         n : integer
         Number of molecules to be inserted in the box.
 
-	Returns
-    	----------
-	None
+        Returns
+        ----------
+        None
 
 
-	Raises
-    	----------
-	None
+        Raises
+        ----------
+        None
 
 
-	Notes
-    	----------
-	None
+        Notes
+        ----------
+        None
 
         """
 
         self.box.mass = mass / 6.023e23 * 10.0**-3
-        self.box.numParticles = n 
+        self.box.numParticles = n
 
         if method == "random":
             self.box.coordinates = (0.5 - np.random.rand(n,3)) * self.box.length
 
         elif method == "lattice":
-            nSide = 1
-            self.box.coordinates = np.zeros((n,3))
-            while np.power(nSide, 3) < n:
-                nSide += 1
-            counterPosition = np.zeros((3, ))
-            for iParticle in range(0, n):
-                self.box.coordinates[iParticle] = \
-                    (counterPosition + 0.5)*self.box.length / nSide \
-                    - 0.5*self.box.length 
-                counterPosition[0] += 1
-                if counterPosition[0] == nSide:
-                    counterPosition[0] = 0
-                    counterPosition[1] += 1
-                    if counterPosition[1] == nSide:
-                        counterPosition[1] = 0
-                        counterPosition[2] += 1
+        #    nSide = 1
+        #    self.box.coordinates = np.zeros((n,3))
+        #    while np.power(nSide, 3) < n:
+        #        nSide += 1
+        #    counterPosition = np.zeros((3, ))
+        #    for iParticle in range(0, n):
+        #        self.box.coordinates[iParticle] = \
+        #            (counterPosition + 0.5)*self.box.length / nSide \
+        #            - 0.5*self.box.length 
+        #        counterPosition[0] += 1
+        #        if counterPosition[0] == nSide:
+        #            counterPosition[0] = 0
+        #            counterPosition[1] += 1
+        #            if counterPosition[1] == nSide:
+        #                counterPosition[1] = 0
+        #                counterPosition[2] += 1
 
-            for iParticle in range(0, self.box.numParticles):
-                self.box.coordinates[iParticle] -= 0.5
+        #    for iParticle in range(0, self.box.numParticles):
+        #        self.box.coordinates[iParticle] -= 0.5
 
 
+    	    xVector = np.linspace(0.0,self.box.length,np.cbrt(self.box.numParticles) + 1)
+	    yVector = np.linspace(0.0,self.box.length,np.cbrt(self.box.numParticles) + 1)
+	    zVector = np.linspace(0.0,self.box.length,np.cbrt(self.box.numParticles) + 1)
+	    self.box.coordinates = np.vstack(np.meshgrid(xVector,yVector,zVector)).reshape(3,-1).T
+
+            excess = len(self.box.coordinates) - self.box.numParticles
+
+            self.box.coordinates = self.box.coordinates[:-excess]
+
+            self.box.coordinates *= 0.98
+
+           # print self.box.coordinates
+
+            #raw_input()
+#
     def assignVelocities(self, temperature):
         """
         This function assigns velocities to atoms according to the
         Maxwell-Boltzmann distribution at a specified temperature.
         It also removes momentum to avoid translational drifts.
 
-	Parameters
-    	----------
+        Parameters
+        ----------
         temperature: float
         The temperature of the velocity distribution.
 
-	Returns
-    	----------
-	None
+        Returns
+        ----------
+        None
 
 
-	Raises
-    	----------
-	None
+        Raises
+        ----------
+        None
 
 
-	Notes
-    	----------
-	None
+        Notes
+        ----------
+        None
 
         """
 
@@ -109,26 +124,26 @@ class BoxManager(object):
 
     def getConfigFromFile(self, restartFile, mass=0.0):
         """
-	Reads in a configuration in xyz format.
+        Reads in a configuration in xyz format.
 
-	Parameters
-    	----------
-    	restartFile: string
-	Location of the xyz file containing the configuration
+        Parameters
+        ----------
+        restartFile: string
+        Location of the xyz file containing the configuration
 
-	Returns
-    	----------
-	None
-
-
-	Raises
-    	----------
-	None
+        Returns
+        ----------
+        None
 
 
-	Notes
-    	----------
-	None
+        Raises
+        ----------
+        None
+
+
+        Notes
+        ----------
+        None
 
         """
 

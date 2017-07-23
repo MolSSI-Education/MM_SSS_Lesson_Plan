@@ -45,8 +45,7 @@
 
 Your first assignment consisted on implementing a Monte Carlo (MC) simulation
 for the Lennard-Jones (LJ) particle in the canonical ensemble. 
-As part of this task,
-you developed code that computed pair-wise energies and forces for this model, 
+As part of this task, you developed code that computed pair-wise energies and forces for this model, 
 as well as functions that computed interaction energies between molecules,
 the total system potential energy, and the atomic virial for the estimation of pressure.
 
@@ -265,6 +264,11 @@ where the integral is performed using numerical quadrature, such as the \href{ht
 
 \textbf{Periodic boundary conditions and minimum image distance.} 
 As in the MC case, your MD code should also implement these features.
+
+\textbf{Temperature. } The instantaneous temperature in a simulation can be computed as 
+\begin{equation}
+	T = \frac{2 K}{N_{DOF} k_B}
+\end{equation}
 
 \subsection{Concrete tasks}
 
