@@ -34,20 +34,18 @@
 Your first assignment consisted on implementing a Monte Carlo (MC) simulation
 for the Lennard-Jones (LJ) particle in the canonical ensemble. 
 As part of this task,
-you developed code that computed pair-wise energies and forces for this model, 
-as well as functions that computed interaction energies between molecules,
-the total system energy and the system virial.
+you developed code that computed pairwise energies and forces for this model.
 
-The objective of the new task is to extend your code by including the
+The objective of this task is to extend your code by including the
 necessary functionality to simulate the NVE ensemble of configurations 
-of the LJ model using the Molecular Dynamics (MD). You will be 
+of the LJ model using the Molecular Dynamics (MD) method. You will be 
 assigned to work in teams to develop this project. The team will
 decide how is best to design the new code: what is the shared functionality
 between the two methods? how does the library should look like? How can
-we improve reusability and extensibility? what data
+we improve reusability and extensibility? What data
 structures should be used? What are the unit tests 
 that might be used? The primary learning goal of this activity 
-is to think about interoperability and teamwork.
+is to think about teamwork and interoperability.
 
 In the following sections, the relevant equations of the MD 
 method will be presented and reference data for validation will be provided.
@@ -56,32 +54,30 @@ method will be presented and reference data for validation will be provided.
 
 A very common technique to simulate equilibrium and nonequilibrium
 properties is the Molecular Dynamics method. 
-The objective of this method is to simulate the evolution of a model over time
+The objective of is to simulate the evolution of a model over time
 by integrating the Newtonian equations of motion to 
 extract dynamic and thermodynamic properties. Thermodynamic
 averages should be identical to those obtained by MC sampling
 due to the ergodic hypothesis, given that we use the same model at the
-same conditions. In an MD simulation, we can get additional dynamical
-properties that is inaccessible in an MC simulation, such diffusivities or 
+same conditions. One advantage of MD over MC simulations is 
+the ability to compute dynamical properties such as diffusivities or 
 viscosities. 
 
-Given a conservative system (i.e. the Hamiltonian does not depend on time), 
-we can write the Newtonian equations of motion in Cartesian coordinates
-from Hamilton's
-equations as
+The Newtonian equations of motions in Cartesian coordinates are
 
 \begin{equation}
-	\ddot{\mathbf{r}} = \frac{\mathbf{f}_i\left( \mathbf{r} \right) }{\textit{m}_i}
+	\ddot{\mathbf{r}} = \frac{\mathbf{f}_i\left( \mathbf{r^N} \right) }{\textit{m}_i}
 \end{equation}
 
-Where $\mathbf{r}$ is the vector of Cartesian coordinates, $\mathbf{f}_i$ and
- $\textit{m}_i$ are the forces and the mass of each atom, respectively.
-These are 3N second order differential equations, where N is the number 
+Where $\mathbf{r^N}$, $\mathbf{f}_i$ and
+ $\textit{m}_i$ are the vector of atomic Cartesian coordinates, the forces 
+ and the mass of each atom, respectively.
+These are $3N$ second order differential equations, where $N$ is the number 
 of atoms in the system. There are various finite difference approaches to solve
 such equations. The basic idea in all of them is to move 
 across time using finite time steps $\delta t$ and thus generate new atomic
 positions. A good integration scheme is one that conserves energy 
-and momentum, minimizes force evaluations, is stable and accurate. 
+and momentum, minimizes force evaluations and is stable and accurate. 
 
 \section{Velocity Verlet Algorithm}
 
@@ -118,34 +114,39 @@ This algorithm can be implemented as follows
 
 \subsection{Technical considerations}
 
-\textbf{Energy conservation. } The velocity verlet algorithm has very good
+\textbf{Energy conservation and time step. } The velocity verlet algorithm has very good
 energy conservation properties. It is always a good check to see if 
-there is no drift in energy during the course of the simulation.
+there is no drift in energy during the course of the simulation. If the algorithm 
+is correctly implemented, the energy drift can be mitigated by reducing the 
+time step. 
 
-\textbf{Time step. } Using too large of a time step will result in an unstable
-system, with energy increasing in time. 
+\textbf{Initialization. } For the problem at hand, atoms can be
+placed in a lattice as an initial configuration.
+An alternative approach is to place atoms randomly, but this can be
+dangerous as core overlaps might exist, leading to huge repulsion forces. 
+In this case, an initial relaxation stage could be performed using
+translational MC moves.
 
-\textbf{Initial positions. } It is possible to use a crystaline 
-lattice as an initial
-configuration. You could also place atoms randomly, but this might be
-dangerous as core overlaps might exist, leading to huge repulsion forces. In
-this case, you could first relax the system using the translation moves
-of your MC code, which only use energy differences forces for sampling. 
-Finally, you could use an old initial configuration 
-generated from your MC code.
-
-\textbf{Initial velocities. } The initial velocities are usually obtained
-using the Maxwell-Boltzmann distribution at the desired temperature
+Velocities must also be initialized. This can be done by randomly selecting
+velocities
+from a Maxwell-Boltzmann distribution at the desired temperature T
 
 \begin{equation}
-	\rho \left(\mathbf{v}_i\right) = \left( \frac{m_i}{2 \pi k_B T} \right) ^ {1/2} exp \left( - \frac{m_i \mathbf{v}_i^2 } {2 k_B T }  \right)
+	\rho \left(v_{ix}\right) = \left( \frac{m_i}{2 \pi k_B T} \right) ^ {1/2} exp \left( - \frac{m_i v_{ix}^2 } {2 k_B T }  \right)
 \end{equation}
+%
+This provides the probability that 
+an atom $i$ has a velocity $v_{ix}$ $x$ direction.
 
-Note that this is a Gaussian distribution with zero mean and variance
+Note that the Maxwell-Boltzmann distribution
+is a Gaussian distribution with zero mean and variance
 
 \begin{equation}
 	\sigma_v^2 = \frac{k_B T}{m_i}
 \end{equation}
+
+Alternatively, the initial velocities can also be chosen from a uniform distribution.
+The Maxwell-Boltzmann distribution will be achieved rapidly.
 
 Once the velocities are assigned to the atoms, we must set the system momentum
 to zero to avoid any translational drift. We do this by 
@@ -157,6 +158,50 @@ to zero to avoid any translational drift. We do this by
 			\mathbf{v}_i \leftarrow \mathbf{v}_i - \frac{\mathbf{P}} { N m_i}
 		\end{equation}
 \end{itemize}
+
+\textbf{Equilibration. } During this stage of the simulation, the system relaxes to 
+equilibrium from the initial state. Monitoring various properties such as potential,
+ kinetic and total energies, temperature and pressure are ways to determine if the system has
+reached equilibrium. While the total energy must be constant, the potential and kinetic energies
+can fluctuate. The velocities should follow a Maxwell-Boltzmann distribution and kinetic
+energies should be the same in all three directions. 
+
+In the equilibration phase, it is common practice to adjust the velocities of 
+the particles to maintain a constant temperature. The easiest way to alter the
+temperature of the system is to scale the velocities by a factor $\lambda$
+calculated to enforce
+the total kinetic energy $K$ to be equal to the average kinetic energy at a target
+temperature.
+
+\begin{equation}
+	\mathbf{v}^N_{new} = \lambda \mathbf{v}^N
+\end{equation}
+
+where 
+
+\begin{equation}
+	\lambda = \left( \frac{k_B T N_{DOF}}{\sum m_i | \mathbf{v}_i^2 |} \right)
+\end{equation}
+
+where $N_{DOF}$ is the number of degrees of freedom in the system. 
+Note that $N_{DOF} = N - N_c$, where $N_c$ is the number of constraints. 
+For a large enough system, $N_{DOF} \approx 3N$. 
+
+Unfortunately, this simple method alters the natural dynamics of the NVE ensemble
+and consequently does not rigorously this ensemble. In particular, some dynamical
+properties and some fluctuation quantities (e.g. heat capacity) cannot
+be computed reliably. Thus, in a microcanonical ensemble simulation, properties
+are computed only in the production stage, when velocity rescaling is no longer
+applied. 
+
+\textbf{Temperature. } The instantaneous temperature in a simulation can be computed
+as 
+
+\begin{equation}
+	T = \frac{2 K}{N_{DOF} k_B}
+\end{equation}
+
+\textbf{Radial distribution function. } 
 
 \textbf{Periodic boundary conditions, minimum image distance, 
 energy truncation and tail correction. } Your MD code should also implement 
