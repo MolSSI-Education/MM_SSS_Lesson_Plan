@@ -8,19 +8,19 @@ def test_nistEnergy():
 
     answer = (-4351.5,-198.49)
 
-    params = (3.73, 148.0)
-    rCut = 3*params[0]
+    rCut = 3.0
 
-    myBox = mmpy.Box(length=10.0*params[0])
+    myBox = mmpy.Box(length=10.0)
     myBoxManager = mmpy.BoxManager(myBox)
-    myBoxManager.getConfigFromFile(restartFile = "test/nistConfig.xyz")
+    myBoxManager.getConfigFromFile\
+            (restartFile = "test/lj_sample_config_periodic1.txt")
 
-    myForceField = mmpy.LennardJones(parms = params, cutoff = rCut)
+    myForceField = mmpy.LennardJones(cutoff = rCut)
     ffManager = mmpy.ForceFieldManager(myForceField)
 
     totalPairEnergy, wPair = ffManager.getTotalPairEnergyAndVirial(myBox)
     correctionEnergy = myForceField.getTailCorrection(myBox)
 
-    bench_energy = (totalPairEnergy/params[1], correctionEnergy/params[1])
+    bench_energy = (totalPairEnergy, correctionEnergy)
     assert np.allclose(answer, bench_energy)
 
