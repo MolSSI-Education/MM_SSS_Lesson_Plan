@@ -202,6 +202,7 @@ between the new state $n$ and the old state $m$. Note that the argument
 of the energy $\textbf{r}^N$ has been dropped for clarity.
 
 \subsection{Flow of Calculations in a Metropolis Monte Carlo simulation}
+\label{sec.flow}
 
 The following workflow can be used to implement the Metropolis algorithm to sample the canonical ensemble of configurations of LJ particles \cite{Shell.Notes, Maginn.Notes}:
 
@@ -215,6 +216,10 @@ The following workflow can be used to implement the Metropolis algorithm to samp
 	as this would result in a slow sampling of configurational space.
 	More on this below.
 \item The difference in energy between the new and old states is computed.
+	Note that you do not need to compute the \textit{total} system energy
+	difference, as all particles but one remain at the same position. 
+	It is enough to get difference in energy of the selected molecule 
+	in the new and old states.
 \item The new state is accepted or rejected using the Metropolis criterion.
 	Practically, this can be implemented as follows. 
 	If a move from $m$ to $n$ is ``downhill'', $\beta \Delta U \leq 0$,
@@ -355,6 +360,7 @@ Lennard-Jones fluids have the surprisingly pleasant behavior of possessing unive
 
 \begin{equation}
 	U^*\left(r_{ij} \right) = 4 \left[\left(\frac{1}{r^*_{ij}}\right)^{12} -\left(\frac{1}{r^*_{ij}}\right)^{6} \right]
+	\label{eq.lennardjonesReduced}
 \end{equation}
 
 where 
@@ -396,9 +402,38 @@ Using reduced units for input and output will allow you to compare your results 
 
 See the following resources for NIST Lennard-Jones fluid reference data:
 \begin{itemize}
-\item \href{https://mmlapps.nist.gov/srs/LJ_PURE/mc.htm}{Reference thermodynamic data ($N=500$, $T^*=0.85$ and $0.90$, $r_c = 3\sigma$)}
+\item \href{https://mmlapps.nist.gov/srs/LJ_PURE/mc.htm}{Reference thermodynamic data ($N=500$, $T^*=0.90$ and $0.90$, $r_c = 3\sigma$)}
 \item \href{https://www.nist.gov/mml/csd/chemical-informatics-research-group/lennard-jones-fluid-reference-calculations}{Reference snapshot potential energies and virials}
 \end{itemize}
+
+\section{Concrete tasks}
+
+\textbf{Implement one (or more) methods to generate initial configurations. }
+You will want implement more than one method to generate an initial
+configuration. This will allow you to test if your code produces the same
+final answers with different initial conditions. Among the possible options
+are random placement of particles in the box, placement of particles in a
+lattice or start a simulation using an old configuration.
+
+\textbf{Implement the pairwise and long tail correction equations. } 
+These are the LJ potential, force (or virial) expression, energy and 
+pressure long tail corrections. Use reduced units, 
+as in Equation ~\ref{eq.lennardjonesReduced} to facilitate comparison with
+others.
+
+\textbf{Implement a function that computes the total energy of the system. } 
+Compare to the NIST reference snapshot potential energies and virials.
+
+\textbf{Implement the Metropolis algorithm and compare to the NIST
+benchmark. } See Section ~\ref{sec.flow} as
+a reference. This is the part of the code where you will implement
+features such as periodic boundary conditions, minimum image distance, 
+particle translation and the acceptance criteria. You can use the state point
+$T^* = 0.9$, $\rho^* = 0.9$, and $r_c = 3\sigma$  and compare to the
+NIST benchmark for thermodynamic data.
+
+\textbf{Check if your energies are consistent with the NIST benchmark. }
+
 
 \newpage
 %
