@@ -167,12 +167,14 @@ The component derivatives are simply given by
 \begin{eqnarray}
 \nabla_{\mathbf{r}_k} U_{LJ}(r_{ik}) &=& \left. \frac{\partial U_{LJ}(r)}{\partial r} \right|_{r_{ik}} \nabla_{\mathbf{r}_k} r_{ik}  \\
 &=& 4 \epsilon \left[- 12 \sigma^{12} r_{ik}^{-13} + 6 \sigma^6 r_{ik}^{-7} \right] \nabla_{\mathbf{r}_k} || \mathbf{r}_k - \mathbf{r}_i ||_2  \\
-&=& - \frac{48 \epsilon}{r_{ik}} \left[2 \left(\frac{\sigma}{r}\right)^{12} - \left(\frac{\sigma}{r}\right)^{6} \right] \left[ \frac{\mathbf{r}_k - \mathbf{r}_i}{r_{ik}} \right]
+&=& - \frac{48 \epsilon}{r_{ik}} \left[\left(\frac{\sigma}{r_{ij}}\right)^{12} - \frac{1}{2} \left(\frac{\sigma}{r_{ik}}\right)^{6} \right] \left[ \frac{\mathbf{r}_k - \mathbf{r}_i}{r_{ik}} \right] \\
+&=& - 48 \epsilon \left[\left(\frac{\sigma}{r_{ik}}\right)^{12} - \frac{1}{2} \left(\frac{\sigma}{r_{ik}}\right)^{6} \right] \left[ \frac{\mathbf{r}_k - \mathbf{r}_i}{r_{ik}^2} \right]
 \end{eqnarray}
 and
 \begin{eqnarray}
 \nabla_{\mathbf{r}_k} S(r_{ik}) &=& \left. \frac{\partial S(r)}{\partial r} \right|_{r_{ik}} \nabla_{\mathbf{r}_k} r_{ik}  \\
 &=&\frac{(12 r_{ik}) (r_{ik}^2 - r_\mathrm{cut}^2) (r_{ik}^2 - r_\mathrm{sw}^2)}{(r_\mathrm{cut}^2 - r_\mathrm{sw}^2)^3} \left[ \frac{\mathbf{r}_k - \mathbf{r}_i}{r_{ik}} \right] \\
+&=&\frac{12 (r_{ik}^2 - r_\mathrm{cut}^2) (r_{ik}^2 - r_\mathrm{sw}^2)}{(r_\mathrm{cut}^2 - r_\mathrm{sw}^2)^3} \left[ \mathbf{r}_k - \mathbf{r}_i \right] 
 \end{eqnarray}
 
 \subsection{Technical considerations}
