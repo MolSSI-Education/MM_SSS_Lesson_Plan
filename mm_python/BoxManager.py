@@ -68,10 +68,10 @@ class BoxManager(object):
         #        self.box.coordinates[iParticle] -= 0.5
 
 
-    	    xVector = np.linspace(0.0,self.box.length,np.cbrt(self.box.numParticles) + 1)
-	    yVector = np.linspace(0.0,self.box.length,np.cbrt(self.box.numParticles) + 1)
-	    zVector = np.linspace(0.0,self.box.length,np.cbrt(self.box.numParticles) + 1)
-	    self.box.coordinates = np.vstack(np.meshgrid(xVector,yVector,zVector)).reshape(3,-1).T
+            xVector = np.linspace(0.0,self.box.length,np.cbrt(self.box.numParticles) + 1)
+            yVector = np.linspace(0.0,self.box.length,np.cbrt(self.box.numParticles) + 1)
+            zVector = np.linspace(0.0,self.box.length,np.cbrt(self.box.numParticles) + 1)
+            self.box.coordinates = np.vstack(np.meshgrid(xVector,yVector,zVector)).reshape(3,-1).T
 
             excess = len(self.box.coordinates) - self.box.numParticles
 
